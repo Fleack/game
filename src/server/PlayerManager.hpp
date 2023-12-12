@@ -2,13 +2,14 @@
 
 #include <string>
 
+class EntertainmentActivity;
 class IActivity;
 class Player;
 
 class PlayerManager
 {
 public:
-    PlayerManager();
+    PlayerManager() = default;
     ~PlayerManager() noexcept;
 
     [[nodiscard]] bool createPlayer(std::string const& name) noexcept;
@@ -16,9 +17,9 @@ public:
     Player* getPlayer() const noexcept;
 
     void passYear() const noexcept;
-    void performActivity(IActivity const&) const noexcept;
+    void performEntertainmentActivity(EntertainmentActivity&) const noexcept;
     [[nodiscard]] bool performEducationCourse(std::string const& courseName) const noexcept;
-    void performJob() const noexcept;
+    [[nodiscard]] bool performJob() const noexcept;
 
 private:
     Player* m_player;

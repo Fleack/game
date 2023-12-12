@@ -1,8 +1,19 @@
 #include "EntertainmentActivity.hpp"
 
-#include "Player.hpp"
+#include "../Player.hpp"
 
-void EntertainmentActivity::perform(Player& player) const noexcept
+#include <iostream>
+
+EntertainmentActivity::EntertainmentActivity()
+{
+    std::cout << "nigga";
+}
+
+EntertainmentActivity::~EntertainmentActivity()
+{
+}
+
+void EntertainmentActivity::perform(Player& player) noexcept
 {
     player.increaseHappiness(20);
     player.decreaseEnergy(10);

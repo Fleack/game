@@ -1,14 +1,18 @@
 #pragma once
 
-#include "IActivity.hpp"
+#include <string>
+#include <cstdint>
 
-class JobActivity final
+class Player;
+
+class JobActivity
 {
 public:
     JobActivity(std::string&& name, uint32_t salaryMin, uint32_t salaryMax, uint8_t energyDecrease, uint8_t healthDecrease, uint8_t happienesDecrease);
-    ~JobActivity() = default;
+    ~JobActivity();
 
-    void perform(Player& player) const noexcept;
+    void perform(Player& player) noexcept;
+    std::string name() noexcept { return m_name; }
 
     std::string const& getName() const noexcept { return m_name; }
     uint32_t getID() const noexcept { return m_id; }

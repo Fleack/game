@@ -1,46 +1,26 @@
 #pragma once
 
-#include "IActivity.hpp"
+#include <string>
 
 class Player;
 
-class EducationActivity : public IActivity
+class EducationActivity
 {
 public:
-    void perform(Player& player) const noexcept override;
-};
+    EducationActivity(std::string&& name, uint8_t energyDecrease, uint8_t happienesDecrease);
+    ~EducationActivity();
 
-class MathCourse final : public EducationActivity
-{
-public:
-    void perform(Player& player) const noexcept override;
-    std::string name() const noexcept override { return "Math course"; }
-};
+    void perform(Player& player) noexcept;
+    std::string name() noexcept { return m_name; }
 
-class HistoryCourse final : public EducationActivity
-{
-public:
-    void perform(Player& player) const noexcept override;
-    std::string name() const noexcept override { return "History course"; }
-};
+    std::string const& getName() const noexcept { return m_name; }
+    uint8_t getEnergy() const noexcept { return m_energyDecrease; }
+    uint8_t getHappiness() const noexcept { return m_happinessDecrease; }
 
-class PhysicsCourse final : public EducationActivity
-{
-public:
-    void perform(Player& player) const noexcept override;
-    std::string name() const noexcept override { return "Physics course"; }
-};
-
-class LiteratureCourse final : public EducationActivity
-{
-public:
-    void perform(Player& player) const noexcept override;
-    std::string name() const noexcept override { return "Literature course"; }
-};
-
-class ProgrammingCourse final : public EducationActivity
-{
-public:
-    void perform(Player& player) const noexcept override;
-    std::string name() const noexcept override { return "Programming course"; }
+private:
+    static uint32_t g_next_id;
+    std::string m_name;
+    uint32_t m_id;
+    uint8_t m_energyDecrease;
+    uint8_t m_happinessDecrease;
 };

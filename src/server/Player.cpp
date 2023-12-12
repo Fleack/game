@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-#include "Logger.hpp"
+#include <iostream>
 
 #include <iostream>
 
@@ -99,10 +99,14 @@ void Player::increaseSkill(skills_e const skill, uint8_t const amount)
 
 void Player::decreaseSkill(skills_e const skill, uint8_t const amount)
 {
-    m_skills[skill] -= amount;
-    if (m_skills[skill] < 0)
+
+    if (m_skills[skill] < amount)
     {
         m_skills[skill] = 0;
+    }
+    else
+    {
+        m_skills[skill] -= amount;
     }
 }
 
@@ -110,7 +114,7 @@ void Player::setJob(std::unique_ptr<JobActivity>&& job) noexcept
 {
     if (!job)
     {
-        LOG(warning) << "Tried to set nullptr job";
+        std::cout << "Tried to set nullptr job";
         return;
     }
     m_job = std::move(job);
@@ -120,7 +124,7 @@ void Player::removeJob() noexcept
 {
     if (!m_job)
     {
-        LOG(warning) << "Player already has no job";
+        std::cout << "Player already has no job";
     }
     m_job = nullptr;
 }

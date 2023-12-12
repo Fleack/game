@@ -1,7 +1,6 @@
 #include "WorldManager.hpp"
 
-#include "Logger.hpp"
-
+#include <iostream>
 #include <algorithm>
 #include <functional>
 #include <random>
@@ -31,32 +30,8 @@ WorldManager::WorldManager()
 
 std::vector<WorldManager::job_t> const& WorldManager::getAllJobs() const noexcept
 {
-    LOG(debug) << "getAllJobs";
+    std::cout << "getAllJobs";
     return m_jobs;
-}
-
-void WorldManager::addNewRandomJob()
-{
-    auto job = generateRandomJob();
-    LOG(info) << "Add new random job: " << job->getName() << " [" << job->getID() << "]";
-    m_jobs.push_back(std::move(job));
-}
-
-void WorldManager::removeRandomJob()
-{
-    if (m_jobs.empty())
-    {
-        LOG(warning) << "Trying to remove job from empty vector";
-        return;
-    }
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<size_t> dist(0, m_jobs.size() - 1);
-
-    size_t const indexToRemove = dist(gen);
-    LOG(info) << "Removed job: " << m_jobs[indexToRemove]->getName() << " [" << m_jobs[indexToRemove]->getID() << "]";
-    m_jobs.erase(m_jobs.begin() + indexToRemove);
 }
 
 JobActivity const* WorldManager::getJob(uint8_t jobId) const noexcept
@@ -68,7 +43,7 @@ JobActivity const* WorldManager::getJob(uint8_t jobId) const noexcept
     {
         return it->get();
     }
-    LOG(error) << "Incorrect job ID: " << jobId;
+    std::cout << "Incorrect job ID: " << jobId;
     return nullptr;
 }
 
@@ -85,8 +60,32 @@ std::unique_ptr<JobActivity> WorldManager::moveJob(uint8_t jobId)
         return movedJob;
     }
 
-    LOG(error) << "Incorrect job ID: " << jobId;
+    std::cout << "Incorrect job ID: " << jobId;
     return nullptr;
+}
+
+void WorldManager::addNewRandomJob()
+{
+    auto job = generateRandomJob();
+    std::cout << "Add new random job: " << job->getName() << " [" << job->getID() << "]";
+    m_jobs.push_back(std::move(job));
+}
+
+void WorldManager::removeRandomJob()
+{
+    if (m_jobs.empty())
+    {
+        std::cout << "Trying to remove job from empty vector";
+        return;
+    }
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<size_t> dist(0, m_jobs.size() - 1);
+
+    size_t const indexToRemove = dist(gen);
+    std::cout << "Removed job: " << m_jobs[indexToRemove]->getName() << " [" << m_jobs[indexToRemove]->getID() << "]";
+    m_jobs.erase(m_jobs.begin() + indexToRemove);
 }
 
 std::unique_ptr<JobActivity> WorldManager::generateRandomJob()

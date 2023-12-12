@@ -11,6 +11,7 @@ void runServer()
         Server server(io_context, 12345);
         server.start();
         io_context.run();
+
     }
     catch (std::exception const& e)
     {

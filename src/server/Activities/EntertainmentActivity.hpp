@@ -1,12 +1,14 @@
 #pragma once
 
-#include "IActivity.hpp"
+#include <string>
 
 class Player;
 
-class EntertainmentActivity final : public IActivity
+class EntertainmentActivity
 {
 public:
-    void perform(Player& player) const noexcept override;
-    std::string name() const noexcept override { return "Entertainment activity"; }
+    EntertainmentActivity();
+    ~EntertainmentActivity();
+    void perform(Player& player) noexcept;
+    std::string name() noexcept { return "Entertainment activity"; }
 };
