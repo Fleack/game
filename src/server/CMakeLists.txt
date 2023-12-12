@@ -1,4 +1,7 @@
+include_directories(.)
+
 add_subdirectory(Activities)
+
 add_library(server
         Server.cpp
         Logger.cpp
@@ -6,5 +9,3 @@ add_library(server
         PlayerManager.cpp
         WorldManager.cpp
 )
-
-target_include_directories(server PRIVATE activities)
