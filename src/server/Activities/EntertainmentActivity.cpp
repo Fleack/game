@@ -1,6 +1,6 @@
 #include "EntertainmentActivity.hpp"
 
-#include "../Player.hpp"
+#include "Player.hpp"
 
 void EntertainmentActivity::perform(Player& player) const noexcept
 {

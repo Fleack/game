@@ -1,6 +1,6 @@
 #include "EducationActivity.hpp"
 
-#include "../Player.hpp" // Fix this somehow
+#include "Player.hpp"
 
 void EducationActivity::perform(Player& player) const noexcept
 {

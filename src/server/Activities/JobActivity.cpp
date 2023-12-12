@@ -1,6 +1,6 @@
 #include "JobActivity.hpp"
 
-#include "../Player.hpp"
+#include "Player.hpp"
 
 #include <ctime>
 
