@@ -71,6 +71,10 @@ void Server::handleRequest()
         {
             handleGetJobs();
         }
+        else if (command == "terminate_session")
+        {
+            // return false and stop reading socket
+        }
         else
         {
             LOG(error) << "Unknown command: " << command << std::endl;
