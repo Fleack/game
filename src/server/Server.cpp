@@ -6,7 +6,7 @@
 
 #include <nlohmann/json.hpp>
 
-Server::Server(asio::io_context& ioContext, uint8_t port)
+Server::Server(asio::io_context& ioContext, uint16_t port)
     : m_acceptor{ioContext, {tcp_t::v4(), port}}
     , m_socket{ioContext}
 {}
@@ -73,7 +73,7 @@ void Server::handleRequest()
         }
         else if (command == "terminate_session")
         {
-            // return false and stop reading socket
+            handleTerminateSession();
         }
         else
         {
@@ -329,6 +329,16 @@ void Server::handleGetJobs()
 
         sendResponse(R"({"error": "Internal Server Error"})", beast::http::status::internal_server_error);
     }
+}
+
+void Server::handleTerminateSession()
+{
+    LOG(info) << "Terminating server...";
+
+    m_socket.close();
+    m_acceptor.close();
+
+    std::exit(EXIT_SUCCESS);
 }
 
 void Server::sendResponse(std::string const& body, beast::http::status status)

@@ -15,7 +15,7 @@ using json_t = nlohmann::json;
 class Server
 {
 public:
-    Server(asio::io_context&, uint8_t);
+    Server(asio::io_context&, uint16_t port);
 
     void start();
 
@@ -30,6 +30,7 @@ private:
     void handleApplyJobRequest(json_t const&);
     void handleGetPlayerStats();
     void handleGetJobs();
+    void handleTerminateSession();
 
     void sendResponse(std::string const& /* body */, beast::http::status);
 
