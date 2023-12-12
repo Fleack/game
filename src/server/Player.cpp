@@ -1,7 +1,8 @@
 #include "Player.hpp"
 
+#include "Logger.hpp"
+
 #include <iostream>
-#include <Logger.hpp>
 
 Player::Player(std::string const& name) noexcept
     : m_name{name}

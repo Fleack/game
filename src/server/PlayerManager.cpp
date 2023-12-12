@@ -1,10 +1,9 @@
 #include "PlayerManager.hpp"
 
+#include "Activities/EducationActivity.hpp"
 #include "Activities/IActivity.hpp"
 #include "Logger.hpp"
 #include "Player.hpp"
-
-#include <Activities/EducationActivity.hpp>
 
 PlayerManager::~PlayerManager() noexcept
 {
@@ -76,4 +75,3 @@ void PlayerManager::performJob() const noexcept
     // because client doesn't allow sending the request before creating player
     m_player->performJob();
 }
-

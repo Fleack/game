@@ -1,17 +1,18 @@
 #include "WorldManager.hpp"
 
+#include "Logger.hpp"
+
 #include <algorithm>
 #include <functional>
-#include <Logger.hpp>
 #include <random>
 
-std::array<std::string, 20> const companyNames = {
+std::array<std::string, 20> const COMPANY_NAMES = {
     "Quantum", "Nova", "Pinnacle", "Zenith", "Stratosphere",
     "Vortex", "Apex", "Spectrum", "Celestial", "Nebula",
     "Aurora", "Stellar", "Eclipse", "Paragon", "Radiant",
     "Abyssal", "Horizon", "Elysian", "Pantheon", "Mystic"};
 
-std::array<std::string, 20> const professions = {
+std::array<std::string, 20> const PROFESSIONS = {
     "Software Developer", "Data Scientist", "Project Manager", "Marketing Specialist",
     "Financial Analyst", "Network Administrator", "Graphic Designer", "Plumber",
     "Sales Representative", "Research Scientist", "Chef", "Medical Doctor",
@@ -96,7 +97,7 @@ std::unique_ptr<JobActivity> WorldManager::generateRandomJob()
     uint8_t healthDecrease = 5 + std::rand() % 5;
     uint8_t happienesDecrease = 5 + std::rand() % 5;
 
-    std::string jobName = companyNames[std::rand() % companyNames.size()];
-    +": " + professions[std::rand() % professions.size()];
+    std::string jobName = COMPANY_NAMES[std::rand() % COMPANY_NAMES.size()];
+    +": " + PROFESSIONS[std::rand() % PROFESSIONS.size()];
     return std::make_unique<JobActivity>(std::move(jobName), salaryMin, salaryMax, energyDecrease, healthDecrease, happienesDecrease);
 }
