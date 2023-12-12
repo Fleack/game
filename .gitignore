@@ -33,7 +33,7 @@
 
 # Out
 /out
-.PVS-Studio
+*.PVS-Studio*
 .idea
 
 # Clang
