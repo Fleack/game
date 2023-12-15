@@ -1,7 +1,11 @@
+#include "client/MainWindow.hpp"
 #include "server/Server.hpp"
 
 #include <iostream>
-#include <thread>
+#include <QApplication>
+#include <QThread>
+
+#define DEBUG
 
 void runServer()
 {
@@ -11,7 +15,6 @@ void runServer()
         Server server(io_context, 12345);
         server.start();
         io_context.run();
-
     }
     catch (std::exception const& e)
     {
@@ -20,16 +23,31 @@ void runServer()
     }
 }
 
-void runClient()
+int runClient(int argc, char* argv[])
 {
-    std::cout << "Client is running..." << std::endl;
+    try
+    {
+        std::cout << "Client is running..." << std::endl;
+        QApplication app(argc, argv);
+        MainWindow mainWindow;
+        mainWindow.show();
+
+        int result = app.exec();
+        return result;
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << "Exception in client: " << e.what() << std::endl;
+        return -1;
+    }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
     std::thread serverThread(runServer);
-    runClient();
+    int result = runClient(argc, argv);
+
     serverThread.join();
 
-    return 0;
+    return result;
 }

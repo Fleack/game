@@ -38,6 +38,8 @@ private:
     static constexpr uint8_t MAX_RANDOM_JOBS = 6;
     static constexpr uint8_t HTTP_VERSION = 11;
 
+    bool m_terminate{false};
+
     asio::ip::tcp::acceptor m_acceptor;
     asio::ip::tcp::socket m_socket;
     PlayerManager m_playerManager{};

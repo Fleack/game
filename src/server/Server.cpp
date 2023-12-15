@@ -3,9 +3,9 @@
 #include "Activities/EntertainmentActivity.hpp"
 #include "Player.hpp"
 
-#include <nlohmann/json.hpp>
 #include <iostream>
 
+#include <nlohmann/json.hpp>
 
 Server::Server(asio::io_context& ioContext, uint16_t port)
     : m_acceptor{ioContext, {tcp_t::v4(), port}}
@@ -19,7 +19,10 @@ void Server::start()
         if (!ec)
         {
             handleRequest();
-            start();
+            if (!m_terminate)
+            {
+                start();
+            }
         }
         else
         {
@@ -224,7 +227,6 @@ void Server::handlePreformJobRequest()
         {
             sendResponse(R"({"error": "Bad Request: Player has not been created"})", status::bad_request);
         }
-
     }
     catch (std::exception const& e)
     {
@@ -343,10 +345,12 @@ void Server::handleTerminateSession()
 {
     std::cout << "Terminating server...";
 
+    sendResponse(R"({"message": "Server terminating"})", beast::http::status::ok);
+
     m_socket.close();
     m_acceptor.close();
 
-    std::exit(EXIT_SUCCESS);
+    m_terminate = true;
 }
 
 void Server::sendResponse(std::string const& body, beast::http::status status)
