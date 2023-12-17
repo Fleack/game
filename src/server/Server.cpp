@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include <magic_enum/magic_enum.hpp>
 #include <nlohmann/json.hpp>
 
 Server::Server(asio::io_context& ioContext, uint16_t port)
@@ -40,6 +41,9 @@ void Server::handleRequest()
         read(m_socket, buffer, req);
 
         auto jsonRequest = json_t::parse(req.body());
+        std::cout << "\n---------------------------------------------------------\n";
+        std::cout << "Recieved request: " << jsonRequest << std::endl;
+        std::cout << "---------------------------------------------------------\n\n";
 
         auto command = jsonRequest["command"].get<std::string>();
         if (command == "create_player")
@@ -69,6 +73,10 @@ void Server::handleRequest()
         else if (command == "get_player_stats")
         {
             handleGetPlayerStats();
+        }
+        else if (command == "get_player_skills")
+        {
+            handleGetPlayerSkills();
         }
         else if (command == "get_jobs")
         {
@@ -270,6 +278,39 @@ void Server::handleApplyJobRequest(json_t const& jsonRequest)
     }
 }
 
+void Server::handleGetPlayerSkills()
+{
+    try
+    {
+        if (auto const player = m_playerManager.getPlayer())
+        {
+            json_t skillsArray;
+
+            auto const stats = player->getSkills();
+
+            for (const auto& [skill, value] : stats)
+            {
+                json_t skillInfo;
+                skillInfo["name"] = magic_enum::enum_name(skill);
+                skillInfo["value"] = value;
+                skillsArray.push_back(skillInfo);
+            }
+
+            sendResponse(skillsArray.dump(), beast::http::status::ok);
+        }
+        else
+        {
+            std::cout << "Player not found" << std::endl;
+            sendResponse(R"({"error": "Player not found."})", beast::http::status::not_found);
+        }
+    }
+    catch (std::exception const& e)
+    {
+        std::cout << "Error handling get player stats request: " << e.what() << std::endl;
+        sendResponse(R"({"error": "Internal Server Error"})", beast::http::status::internal_server_error);
+    }
+}
+
 void Server::handleGetPlayerStats()
 {
     try
@@ -363,6 +404,10 @@ void Server::sendResponse(std::string const& body, beast::http::status status)
     rsp.set(field::content_type, "application/json");
     rsp.body() = body;
     rsp.prepare_payload();
+
+    std::cout << "\n---------------------------------------------------------\n";
+    std::cout << "Sent response: " << rsp.result() << " | " << rsp.body() << std::endl;
+    std::cout << "---------------------------------------------------------\n";
 
     beast::http::write(m_socket, rsp);
 }

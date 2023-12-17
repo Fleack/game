@@ -5,17 +5,18 @@
 #include <QLabel>
 #include <QNetworkAccessManager>
 #include <QPushButton>
+#include <QVBoxLayout>
 #include <QWidget>
 
-class CharacterPage : public QWidget
+class PlayerPage : public QWidget
 {
     Q_OBJECT
 
 public:
-    CharacterPage(const QString &playerName, QWidget *parent = nullptr);
+    PlayerPage(QString const& playerName, QWidget* parent = nullptr);
 
-    signals:
-        void workClicked();
+signals:
+    void workClicked();
     void skillsClicked();
     void entertainmentClicked();
     void educationClicked();
@@ -23,7 +24,11 @@ public:
     void nextYearClicked(); // Новый сигнал для кнопки "Следующий год"
 
 private:
-    QNetworkAccessManager *networkManager;
+    void createPlayerStats(QVBoxLayout*, QString const& playerName);
+    void createButtons(QVBoxLayout*);
+
+private:
+    QNetworkAccessManager* networkManager;
 };
 
 #endif // CHARACTERPAGE_H

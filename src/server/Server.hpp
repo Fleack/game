@@ -29,6 +29,7 @@ private:
     void handlePreformJobRequest();
     void handleApplyJobRequest(json_t const&);
     void handleGetPlayerStats();
+    void handleGetPlayerSkills();
     void handleGetJobs();
     void handleTerminateSession();
 

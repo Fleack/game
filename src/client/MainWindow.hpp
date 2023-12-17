@@ -1,10 +1,11 @@
-// mainwindow.h
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+// mainwindow.hpp
+#ifndef MAINWINDOW_HPP
+#define MAINWINDOW_HPP
 
-#include "CharacterPage.hpp"
+#include "PlayerSkillsPage.hpp"
 #include "CreatePlayerPage.hpp"
 #include "MainMenuPage.hpp"
+#include "PlayerPage.hpp"
 
 #include <QMainWindow>
 
@@ -20,11 +21,16 @@ private slots:
     void onExitClicked();
     void onBackClicked();
     void onCreatePlayerClicked(QString const& playerName);
+    void onSkillsClicked();
+
+private:
+    void showSkillsPage();
 
 private:
     MainMenuPage* mainMenuPage;
     CreatePlayerPage* createPlayerPage;
-    CharacterPage* characterPage;
+    PlayerPage* playerPage;
+    PlayerSkillsPage* skillsPage;
 };
 
-#endif // MAINWINDOW_H
+#endif // MAINWINDOW_HPP

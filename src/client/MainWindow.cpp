@@ -6,7 +6,8 @@ MainWindow::MainWindow(QWidget* parent)
 {
     mainMenuPage = new MainMenuPage(this);
     createPlayerPage = new CreatePlayerPage(this);
-    characterPage = nullptr;
+    playerPage = nullptr;
+    skillsPage = nullptr;
 
     connect(mainMenuPage, &MainMenuPage::newGameClicked, this, &MainWindow::onNewGameClicked);
     connect(mainMenuPage, &MainMenuPage::exitClicked, this, &MainWindow::onExitClicked);
@@ -19,7 +20,8 @@ MainWindow::MainWindow(QWidget* parent)
 
 void MainWindow::onNewGameClicked()
 {
-    delete characterPage;
+    delete playerPage;
+    delete skillsPage;
 
     createPlayerPage = new CreatePlayerPage(this);
     connect(createPlayerPage, &CreatePlayerPage::backClicked, this, &MainWindow::onBackClicked);
@@ -38,11 +40,30 @@ void MainWindow::onBackClicked()
     setCentralWidget(mainMenuPage);
 }
 
-void MainWindow::onCreatePlayerClicked(QString const& playerName)
+void MainWindow::onCreatePlayerClicked(const QString& playerName)
 {
-    delete characterPage;
+    delete playerPage;
+    delete skillsPage;
 
-    characterPage = new CharacterPage(playerName, this);
-    connect(characterPage, &CharacterPage::backToMainMenuClicked, this, &MainWindow::onBackClicked); // sigsegv
-    setCentralWidget(characterPage);
+    playerPage = new PlayerPage(playerName, this);
+    connect(playerPage, &PlayerPage::backToMainMenuClicked, this, &MainWindow::onBackClicked);
+    connect(playerPage, &PlayerPage::skillsClicked, this, &MainWindow::onSkillsClicked);
+
+    setCentralWidget(playerPage);
+}
+
+
+void MainWindow::onSkillsClicked()
+{
+    showSkillsPage();
+}
+
+void MainWindow::showSkillsPage()
+{
+    delete skillsPage;
+
+    skillsPage = new PlayerSkillsPage(this);
+    connect(skillsPage, &PlayerSkillsPage::backToMainMenuClicked, this, &MainWindow::onBackClicked);
+
+    setCentralWidget(skillsPage);
 }

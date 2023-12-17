@@ -2,11 +2,16 @@
 
 #include <iostream>
 
-#include <iostream>
+#include <magic_enum/magic_enum.hpp>
 
 Player::Player(std::string const& name) noexcept
     : m_name{name}
-{}
+{
+    for (auto skill : magic_enum::enum_values<skills_e>())
+    {
+        m_skills[skill] = 0;
+    }
+}
 
 void Player::increaseHealth(uint8_t const amount) noexcept
 {
@@ -99,7 +104,6 @@ void Player::increaseSkill(skills_e const skill, uint8_t const amount)
 
 void Player::decreaseSkill(skills_e const skill, uint8_t const amount)
 {
-
     if (m_skills[skill] < amount)
     {
         m_skills[skill] = 0;
