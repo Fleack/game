@@ -2,8 +2,8 @@
 #ifndef PLAYERSKILLSPAGE_HPP
 #define PLAYERSKILLSPAGE_HPP
 
-#include <QWidget>
 #include <QNetworkAccessManager>
+#include <QWidget>
 
 class PlayerSkillsPage : public QWidget
 {
@@ -12,11 +12,11 @@ class PlayerSkillsPage : public QWidget
 public:
     explicit PlayerSkillsPage(QWidget* parent = nullptr);
 
-    signals:
-        void backToMainMenuClicked();
+signals:
+    void backToPlayerPageClicked();
 
-    private slots:
-        void onBackClicked();
+private slots:
+    void onBackClicked();
     void fetchPlayerSkills();
 
 private:

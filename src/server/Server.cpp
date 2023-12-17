@@ -318,6 +318,7 @@ void Server::handleGetPlayerStats()
         if (auto const player = m_playerManager.getPlayer())
         {
             json_t jsonResponse;
+            jsonResponse["name"] = player->getName();
             jsonResponse["health"] = player->getHealth();
             jsonResponse["energy"] = player->getEnergy();
             jsonResponse["happiness"] = player->getHappiness();

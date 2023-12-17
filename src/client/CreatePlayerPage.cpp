@@ -57,11 +57,11 @@ void CreatePlayerPage::onCreateClicked()
     QNetworkReply* reply = networkManager->post(request, QJsonDocument(jsonObject).toJson());
 
     // Обработка ответа
-    connect(reply, &QNetworkReply::finished, [this, reply, playerName]() {
+    connect(reply, &QNetworkReply::finished, [this, reply]() {
         if (reply->error() == QNetworkReply::NoError)
         {
             // Успешный ответ от сервера, можно добавить дополнительную логику
-            emit createPlayerClicked(playerName);
+            emit createPlayerClicked();
         }
         else
         {

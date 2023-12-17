@@ -9,6 +9,7 @@ add_library(client
         PlayerSkillsPage.cpp
         PlayerPage.cpp
         MainWindow.cpp
+        JobsPage.cpp
         MainMenuPage.cpp
         CreatePlayerPage.cpp)
 

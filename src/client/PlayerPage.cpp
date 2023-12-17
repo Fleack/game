@@ -9,19 +9,19 @@
 #include <QNetworkRequest>
 #include <QVBoxLayout>
 
-PlayerPage::PlayerPage(QString const& playerName, QWidget* parent)
+PlayerPage::PlayerPage(QWidget* parent)
     : QWidget(parent)
     , networkManager(new QNetworkAccessManager(this))
 {
     // Buttons
     QVBoxLayout* layout = new QVBoxLayout(this);
-    createPlayerStats(layout, playerName);
+    createPlayerStats(layout);
     createButtons(layout);
 }
 
-void PlayerPage::createPlayerStats(QVBoxLayout* layout, QString const& playerName)
+void PlayerPage::createPlayerStats(QVBoxLayout* layout)
 {
-    QLabel* nameLabel = new QLabel("Имя: " + playerName, this);
+    QLabel* nameLabel = new QLabel("Имя: ", this);
     QLabel* healthLabel = new QLabel("Здоровье: ", this);
     QLabel* energyLabel = new QLabel("Энергия: ", this);
     QLabel* happinessLabel = new QLabel("Счастье: ", this);
@@ -58,6 +58,7 @@ void PlayerPage::createPlayerStats(QVBoxLayout* layout, QString const& playerNam
             {
                 QJsonObject playerStats = jsonResponse.object();
 
+                nameLabel->setText("Имя: " + playerStats["name"].toString());
                 healthLabel->setText("Здоровье: " + QString::number(playerStats["health"].toDouble()));
                 energyLabel->setText("Энергия: " + QString::number(playerStats["energy"].toDouble()));
                 happinessLabel->setText("Счастье: " + QString::number(playerStats["happiness"].toDouble()));
@@ -87,19 +88,19 @@ void PlayerPage::createPlayerStats(QVBoxLayout* layout, QString const& playerNam
 
 void PlayerPage::createButtons(QVBoxLayout* layout)
 {
-    QPushButton* workButton = new QPushButton("Работа", this);
+    QPushButton* jobsButton = new QPushButton("Работа", this);
     QPushButton* skillsButton = new QPushButton("Умения", this);
     QPushButton* entertainmentButton = new QPushButton("Развлечения", this);
     QPushButton* educationButton = new QPushButton("Обучение", this);
     QPushButton* backButton = new QPushButton("Назад", this);
 
-    layout->addWidget(workButton);
+    layout->addWidget(jobsButton);
     layout->addWidget(skillsButton);
     layout->addWidget(entertainmentButton);
     layout->addWidget(educationButton);
     layout->addWidget(backButton);
 
-    connect(workButton, &QPushButton::clicked, this, &PlayerPage::workClicked);
+    connect(jobsButton, &QPushButton::clicked, this, &PlayerPage::jobsClicked);
     connect(skillsButton, &QPushButton::clicked, this, &PlayerPage::skillsClicked);
     connect(entertainmentButton, &QPushButton::clicked, this, &PlayerPage::entertainmentClicked);
     connect(educationButton, &QPushButton::clicked, this, &PlayerPage::educationClicked);

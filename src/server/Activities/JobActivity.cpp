@@ -2,7 +2,7 @@
 
 #include "../Player.hpp"
 
-#include <ctime>
+#include <random>
 
 uint32_t JobActivity::g_next_id = 0;
 
@@ -13,8 +13,10 @@ JobActivity::JobActivity(std::string&& name, uint32_t const salaryMin, uint32_t 
     , m_healthDecrease(healthDecrease)
     , m_happienesDecrease(happienesDecrease)
 {
-    std::srand(static_cast<uint32_t>(std::time(nullptr)));
-    m_salary = salaryMin + std::rand() % (salaryMax - salaryMin + 1);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<size_t> dist(salaryMin, salaryMax);
+    m_salary = dist(gen);
 }
 
 JobActivity::~JobActivity() = default;

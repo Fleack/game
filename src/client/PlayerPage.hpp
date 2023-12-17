@@ -13,18 +13,18 @@ class PlayerPage : public QWidget
     Q_OBJECT
 
 public:
-    PlayerPage(QString const& playerName, QWidget* parent = nullptr);
+    PlayerPage(QWidget* parent = nullptr);
 
 signals:
-    void workClicked();
+    void jobsClicked();
     void skillsClicked();
     void entertainmentClicked();
     void educationClicked();
     void backToMainMenuClicked();
-    void nextYearClicked(); // Новый сигнал для кнопки "Следующий год"
+    void nextYearClicked();
 
 private:
-    void createPlayerStats(QVBoxLayout*, QString const& playerName);
+    void createPlayerStats(QVBoxLayout*);
     void createButtons(QVBoxLayout*);
 
 private:

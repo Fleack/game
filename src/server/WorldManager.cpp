@@ -1,8 +1,8 @@
 #include "WorldManager.hpp"
 
-#include <iostream>
 #include <algorithm>
 #include <functional>
+#include <iostream>
 #include <random>
 
 std::array<std::string, 20> const COMPANY_NAMES = {
@@ -20,9 +20,11 @@ std::array<std::string, 20> const PROFESSIONS = {
 
 WorldManager::WorldManager()
 {
-    srand(time(nullptr));
-    // Generate from 3 to 12 random jobs
-    for (int i = 0; i < 3 + rand() % 10; ++i)
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<size_t> dist(6, 12);
+    // Generate from 6 to 12 random jobs
+    for (int i = 0; i < dist(gen); ++i)
     {
         m_jobs.emplace_back(generateRandomJob());
     }
@@ -49,9 +51,9 @@ JobActivity const* WorldManager::getJob(uint8_t jobId) const noexcept
 
 std::unique_ptr<JobActivity> WorldManager::moveJob(uint8_t jobId)
 {
-    auto const it = std::ranges::remove_if(m_jobs, [jobId](auto const& vacancy) {
+    auto const it = std::ranges::find_if(m_jobs, [jobId](auto const& vacancy) {
         return vacancy->getID() == jobId;
-    }).begin();
+    });
 
     if (it != m_jobs.end())
     {
@@ -90,13 +92,19 @@ void WorldManager::removeRandomJob()
 
 std::unique_ptr<JobActivity> WorldManager::generateRandomJob()
 {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<size_t> dist1(10, 20);
+    std::uniform_int_distribution<size_t> dist2(5, 10);
+    std::uniform_int_distribution<size_t> dist3(0, COMPANY_NAMES.size());
+    std::uniform_int_distribution<size_t> dist4(0, PROFESSIONS.size());
+
     uint32_t salaryMin = 250;
     uint32_t salaryMax = 5000;
-    uint8_t energyDecrease = 10 + std::rand() % 10;
-    uint8_t healthDecrease = 5 + std::rand() % 5;
-    uint8_t happienesDecrease = 5 + std::rand() % 5;
+    uint8_t energyDecrease = dist1(gen);
+    uint8_t healthDecrease = dist2(gen);
+    uint8_t happienesDecrease = dist2(gen);
 
-    std::string jobName = COMPANY_NAMES[std::rand() % COMPANY_NAMES.size()];
-    +": " + PROFESSIONS[std::rand() % PROFESSIONS.size()];
+    std::string jobName = COMPANY_NAMES[dist3(gen)] + ": " + PROFESSIONS[dist4(gen)];
     return std::make_unique<JobActivity>(std::move(jobName), salaryMin, salaryMax, energyDecrease, healthDecrease, happienesDecrease);
 }

@@ -17,7 +17,7 @@ public:
 
 signals:
     void backClicked();
-    void createPlayerClicked(QString const& playerName);
+    void createPlayerClicked();
 
 private slots:
     void onCreateClicked();

@@ -1,69 +1,64 @@
 // mainwindow.cpp
 #include "MainWindow.hpp"
 
+#include "JobsPage.hpp"
+
+// TODO REWORK SLOTS AND METHODS
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent)
+    : QMainWindow{parent}
 {
-    mainMenuPage = new MainMenuPage(this);
-    createPlayerPage = new CreatePlayerPage(this);
-    playerPage = nullptr;
-    skillsPage = nullptr;
+    auto* mainMenuPage = new MainMenuPage(this);
 
     connect(mainMenuPage, &MainMenuPage::newGameClicked, this, &MainWindow::onNewGameClicked);
     connect(mainMenuPage, &MainMenuPage::exitClicked, this, &MainWindow::onExitClicked);
-
-    connect(createPlayerPage, &CreatePlayerPage::backClicked, this, &MainWindow::onBackClicked);
-    connect(createPlayerPage, &CreatePlayerPage::createPlayerClicked, this, &MainWindow::onCreatePlayerClicked);
 
     setCentralWidget(mainMenuPage);
 }
 
 void MainWindow::onNewGameClicked()
 {
-    delete playerPage;
-    delete skillsPage;
-
-    createPlayerPage = new CreatePlayerPage(this);
-    connect(createPlayerPage, &CreatePlayerPage::backClicked, this, &MainWindow::onBackClicked);
+    auto* createPlayerPage = new CreatePlayerPage(this);
+    connect(createPlayerPage, &CreatePlayerPage::backClicked, this, &MainWindow::onBackToMainMenuClicked);
     connect(createPlayerPage, &CreatePlayerPage::createPlayerClicked, this, &MainWindow::onCreatePlayerClicked);
 
     setCentralWidget(createPlayerPage);
 }
 
-void MainWindow::onExitClicked()
+void MainWindow::onBackToMainMenuClicked()
 {
-    close();
-}
-
-void MainWindow::onBackClicked()
-{
+    auto* mainMenuPage = new MainMenuPage(this);
+    connect(mainMenuPage, &MainMenuPage::newGameClicked, this, &MainWindow::onNewGameClicked);
+    connect(mainMenuPage, &MainMenuPage::exitClicked, this, &MainWindow::onExitClicked);
     setCentralWidget(mainMenuPage);
 }
 
-void MainWindow::onCreatePlayerClicked(const QString& playerName)
+void MainWindow::onCreatePlayerClicked()
 {
-    delete playerPage;
-    delete skillsPage;
-
-    playerPage = new PlayerPage(playerName, this);
-    connect(playerPage, &PlayerPage::backToMainMenuClicked, this, &MainWindow::onBackClicked);
+    auto* playerPage = new PlayerPage(this);
+    connect(playerPage, &PlayerPage::backToMainMenuClicked, this, &MainWindow::onBackToMainMenuClicked);
     connect(playerPage, &PlayerPage::skillsClicked, this, &MainWindow::onSkillsClicked);
+    connect(playerPage, &PlayerPage::jobsClicked, this, &MainWindow::onJobsClicked);
 
     setCentralWidget(playerPage);
 }
 
-
 void MainWindow::onSkillsClicked()
 {
-    showSkillsPage();
-}
-
-void MainWindow::showSkillsPage()
-{
-    delete skillsPage;
-
-    skillsPage = new PlayerSkillsPage(this);
-    connect(skillsPage, &PlayerSkillsPage::backToMainMenuClicked, this, &MainWindow::onBackClicked);
+    auto* skillsPage = new PlayerSkillsPage(this);
+    connect(skillsPage, &PlayerSkillsPage::backToPlayerPageClicked, this, &MainWindow::onCreatePlayerClicked);
 
     setCentralWidget(skillsPage);
+}
+
+void MainWindow::onJobsClicked()
+{
+    auto* jobsPage = new JobsPage(this);
+    connect(jobsPage, &JobsPage::backToPlayerPageClicked, this, &MainWindow::onCreatePlayerClicked);
+
+    setCentralWidget(jobsPage);
+}
+
+void MainWindow::onExitClicked()
+{
+    close();
 }

@@ -30,14 +30,13 @@ PlayerSkillsPage::PlayerSkillsPage(QWidget* parent)
     layout->addWidget(backButton);
 
     connect(backButton, &QPushButton::clicked, this, &PlayerSkillsPage::onBackClicked);
-    connect(this, &PlayerSkillsPage::backToMainMenuClicked, this, &PlayerSkillsPage::onBackClicked);
 
     fetchPlayerSkills();
 }
 
 void PlayerSkillsPage::onBackClicked()
 {
-    emit backToMainMenuClicked();
+    emit backToPlayerPageClicked();
 }
 
 void PlayerSkillsPage::fetchPlayerSkills()
