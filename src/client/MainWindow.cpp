@@ -1,102 +1,48 @@
+// mainwindow.cpp
 #include "MainWindow.hpp"
-
-#include <QApplication>
-#include <QDebug>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QNetworkReply>
-#include <QPainter>
-#include <QtGlobal>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
-    , m_networkManager(new QNetworkAccessManager(this))
 {
-    setupUI();
+    mainMenuPage = new MainMenuPage(this);
+    createPlayerPage = new CreatePlayerPage(this);
+    characterPage = nullptr;
 
-    connect(m_startGameButton, &QPushButton::clicked, this, &MainWindow::onStartGameClicked);
-    connect(m_exitButton, &QPushButton::clicked, this, &MainWindow::onExitClicked);
-    // connect(this, &MainWindow::destroyed, this, &MainWindow::onExitClicked); TODO Fix game close by cross
+    connect(mainMenuPage, &MainMenuPage::newGameClicked, this, &MainWindow::onNewGameClicked);
+    connect(mainMenuPage, &MainMenuPage::exitClicked, this, &MainWindow::onExitClicked);
 
-    resize(800, 450);
+    connect(createPlayerPage, &CreatePlayerPage::backClicked, this, &MainWindow::onBackClicked);
+    connect(createPlayerPage, &CreatePlayerPage::createPlayerClicked, this, &MainWindow::onCreatePlayerClicked);
+
+    setCentralWidget(mainMenuPage);
 }
 
-MainWindow::~MainWindow()
+void MainWindow::onNewGameClicked()
 {
-    delete m_networkManager;
-    delete m_startGameButton;
-    delete m_exitButton;
-    delete m_mainLayout;
-}
+    delete characterPage;
 
-void MainWindow::paintEvent(QPaintEvent* event)
-{
-    QPainter painter(this);
-    painter.fillRect(rect(), QColor(135, 206, 250));
-}
+    createPlayerPage = new CreatePlayerPage(this);
+    connect(createPlayerPage, &CreatePlayerPage::backClicked, this, &MainWindow::onBackClicked);
+    connect(createPlayerPage, &CreatePlayerPage::createPlayerClicked, this, &MainWindow::onCreatePlayerClicked);
 
-void MainWindow::setupUI()
-{
-    m_startGameButton = new QPushButton("Начать игру", this);
-    m_startGameButton->setObjectName("StartGameButton");
-
-    m_exitButton = new QPushButton("Выйти", this);
-    m_exitButton->setObjectName("ExitButton");
-
-    m_mainLayout = new QVBoxLayout;
-    m_mainLayout->addWidget(m_startGameButton);
-    m_mainLayout->addWidget(m_exitButton);
-    m_mainLayout->setAlignment(Qt::AlignCenter);
-
-    auto const centralWidget = new QWidget(this);
-    centralWidget->setLayout(m_mainLayout);
-    setCentralWidget(centralWidget);
-
-    m_startGameButton->setStyleSheet("QPushButton#StartGameButton {"
-                                     "   background-color: #3498db;"
-                                     "   border: 2px solid #2980b9;"
-                                     "   color: white;"
-                                     "   padding: 10px 20px;"
-                                     "   font-size: 18px;"
-                                     "}"
-                                     "QPushButton#StartGameButton:hover {"
-                                     "   background-color: #2980b9;"
-                                     "}");
-
-    m_exitButton->setStyleSheet("QPushButton#ExitButton {"
-                                "   background-color: #e74c3c;"
-                                "   border: 2px solid #c0392b;"
-                                "   color: white;"
-                                "   padding: 10px 20px;"
-                                "   font-size: 18px;"
-                                "}"
-                                "QPushButton#ExitButton:hover {"
-                                "   background-color: #c0392b;"
-                                "}");
-}
-
-void MainWindow::onStartGameClicked()
-{
-    // Ваш код для начала игры
+    setCentralWidget(createPlayerPage);
 }
 
 void MainWindow::onExitClicked()
 {
-    QNetworkRequest request(QUrl("http://localhost:12345"));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    close();
+}
 
-    QJsonObject json;
-    json["command"] = "terminate_session";
+void MainWindow::onBackClicked()
+{
+    setCentralWidget(mainMenuPage);
+}
 
-    QJsonDocument const doc(json);
-    QByteArray const data = doc.toJson();
+void MainWindow::onCreatePlayerClicked(QString const& playerName)
+{
+    delete characterPage;
 
-    QNetworkReply const* reply = m_networkManager->post(request, data);
-
-    connect(reply, &QNetworkReply::finished, [this]() {
-#ifdef DEBUG
-        qDebug() << "Request sent successfully";
-#endif
-        qApp->quit();
-    });
+    characterPage = new CharacterPage(playerName, this);
+    connect(characterPage, &CharacterPage::backToMainMenuClicked, this, &MainWindow::onBackClicked); // sigsegv
+    setCentralWidget(characterPage);
 }

@@ -1,30 +1,30 @@
-#pragma once
+// mainwindow.h
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include "CharacterPage.hpp"
+#include "CreatePlayerPage.hpp"
+#include "MainMenuPage.hpp"
 
 #include <QMainWindow>
-#include <QNetworkAccessManager>
-#include <QPushButton>
-#include <QVBoxLayout>
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget* parent = nullptr);
-    ~MainWindow();
-
-protected:
-    void paintEvent(QPaintEvent *event) override;
+    MainWindow(QWidget* parent = nullptr);
 
 private slots:
-    void onStartGameClicked();
+    void onNewGameClicked();
     void onExitClicked();
+    void onBackClicked();
+    void onCreatePlayerClicked(QString const& playerName);
 
 private:
-    void setupUI();
-
-    QPushButton* m_startGameButton;
-    QPushButton* m_exitButton;
-    QVBoxLayout* m_mainLayout;
-    QNetworkAccessManager* m_networkManager;
+    MainMenuPage* mainMenuPage;
+    CreatePlayerPage* createPlayerPage;
+    CharacterPage* characterPage;
 };
+
+#endif // MAINWINDOW_H

@@ -6,7 +6,9 @@ include_directories(${Qt6Core_INCLUDE_DIRS} ${Qt6Gui_INCLUDE_DIRS} ${Qt6Widgets_
 set(CMAKE_AUTOMOC ON)
 
 add_library(client
+        CharacterPage.cpp
         MainWindow.cpp
+        MainMenuPage.cpp
         CreatePlayerPage.cpp)
 
 target_link_libraries(client PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network)

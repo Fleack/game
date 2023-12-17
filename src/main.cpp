@@ -13,6 +13,7 @@ void runServer()
     {
         asio::io_context io_context;
         Server server(io_context, 12345);
+        std::cout << "Server is running..." << std::endl;
         server.start();
         io_context.run();
     }
@@ -29,8 +30,8 @@ int runClient(int argc, char* argv[])
     {
         std::cout << "Client is running..." << std::endl;
         QApplication app(argc, argv);
-        MainWindow mainWindow;
-        mainWindow.show();
+        MainWindow menu;
+        menu.show();
 
         int result = app.exec();
         return result;

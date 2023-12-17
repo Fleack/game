@@ -14,20 +14,18 @@ Server::Server(asio::io_context& ioContext, uint16_t port)
 
 void Server::start()
 {
-    std::cout << "Server is running..." << std::endl;
     m_acceptor.async_accept(m_socket, [this](std::error_code const& ec) {
         if (!ec)
         {
             handleRequest();
-            if (!m_terminate)
-            {
-                start();
-            }
         }
         else
         {
             std::cout << "Error accepting connection: " << ec.message() << std::endl;
         }
+
+        m_socket.close();
+        start();
     });
 }
 
@@ -107,8 +105,8 @@ void Server::handleCreatePlayerRequest(json_t const& jsonRequest)
 
     try
     {
-        auto playerName = jsonRequest["player_name"].get<std::string>();
-        if (m_playerManager.createPlayer(jsonRequest))
+        auto const playerName = jsonRequest["player_name"].get<std::string>();
+        if (m_playerManager.createPlayer(playerName))
         {
             sendResponse(R"({"message": "Player created successfully"})", status::created);
         }
@@ -119,13 +117,13 @@ void Server::handleCreatePlayerRequest(json_t const& jsonRequest)
     }
     catch (json_t::exception const& e)
     {
-        std::cout << "Error parsing JSON in handleCreatePlayerRequest: " << e.what();
+        std::cout << "Error parsing JSON in handleCreatePlayerRequest: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Bad Request: Missing required field or incorrect field type"})", status::bad_request);
     }
     catch (std::exception const& e)
     {
-        std::cout << "Error handling create player request: " << e.what();
+        std::cout << "Error handling create player request: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Internal Server Error"})", status::internal_server_error);
     }
@@ -157,7 +155,7 @@ void Server::handlePassYearRequest(json_t const&)
     }
     catch (std::exception const& e)
     {
-        std::cout << "Error handling pass year request: " << e.what();
+        std::cout << "Error handling pass year request: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Internal Server Error"})", status::internal_server_error);
     }
@@ -176,7 +174,7 @@ void Server::handleEntertainmentActivityRequest(json_t const&)
     }
     catch (std::exception const& e)
     {
-        std::cout << "Error handling entertainment activity request: " << e.what();
+        std::cout << "Error handling entertainment activity request: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Internal Server Error"})", status::internal_server_error);
     }
@@ -201,13 +199,13 @@ void Server::handleEducationActivityRequest(json_t const& jsonRequest)
     }
     catch (json_t::exception const& e)
     {
-        std::cout << "Error parsing JSON in handleEducationActivityRequest: " << e.what();
+        std::cout << "Error parsing JSON in handleEducationActivityRequest: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Bad Request: Missing required field or incorrect field type"})", status::bad_request);
     }
     catch (std::exception const& e)
     {
-        std::cout << "Error handling education activity request: " << e.what();
+        std::cout << "Error handling education activity request: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Internal Server Error"})", status::internal_server_error);
     }
@@ -230,7 +228,7 @@ void Server::handlePreformJobRequest()
     }
     catch (std::exception const& e)
     {
-        std::cout << "Error handling perform job request: " << e.what();
+        std::cout << "Error handling perform job request: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Internal Server Error"})", status::internal_server_error);
     }
@@ -246,27 +244,27 @@ void Server::handleApplyJobRequest(json_t const& jsonRequest)
 
         if (auto job = m_worldManager.moveJob(jobId))
         {
-            std::cout << "Player applied for job: " << job->getName() << " [" << job->getID() << "]";
+            std::cout << "Player applied for job: " << job->getName() << " [" << job->getID() << "]" << std::endl;
             m_playerManager.getPlayer()->setJob(std::move(job));
 
             sendResponse(R"({"message": "Job applied successfully"})", status::ok);
         }
         else
         {
-            std::cout << "Job not found with ID: " << jobId;
+            std::cout << "Job not found with ID: " << jobId << std::endl;
 
             sendResponse(R"({"error": "Bad Request: Incorrect job ID"})", status::bad_request);
         }
     }
     catch (json_t::exception const& e)
     {
-        std::cout << "Error parsing JSON in handleApplyJobRequest: " << e.what();
+        std::cout << "Error parsing JSON in handleApplyJobRequest: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Bad Request: Missing required field or incorrect field type"})", status::bad_request);
     }
     catch (std::exception const& e)
     {
-        std::cout << "Error handling apply job request: " << e.what();
+        std::cout << "Error handling apply job request: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Internal Server Error"})", status::internal_server_error);
     }
@@ -301,14 +299,14 @@ void Server::handleGetPlayerStats()
         }
         else
         {
-            std::cout << "Player not found.";
+            std::cout << "Player not found" << std::endl;
 
             sendResponse(R"({"error": "Player not found."})", beast::http::status::not_found);
         }
     }
     catch (std::exception const& e)
     {
-        std::cout << "Error handling get player stats request: " << e.what();
+        std::cout << "Error handling get player stats request: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Internal Server Error"})", beast::http::status::internal_server_error);
     }
@@ -335,7 +333,7 @@ void Server::handleGetJobs()
     }
     catch (std::exception const& e)
     {
-        std::cout << "Error handling get jobs request: " << e.what();
+        std::cout << "Error handling get jobs request: " << e.what() << std::endl;
 
         sendResponse(R"({"error": "Internal Server Error"})", beast::http::status::internal_server_error);
     }
@@ -343,12 +341,13 @@ void Server::handleGetJobs()
 
 void Server::handleTerminateSession()
 {
-    std::cout << "Terminating server...";
+    std::cout << "Terminating server..." << std::endl;
 
     sendResponse(R"({"message": "Server terminating"})", beast::http::status::ok);
 
-    m_socket.close();
+    m_acceptor.cancel();
     m_acceptor.close();
+    m_socket.close();
 
     m_terminate = true;
 }
