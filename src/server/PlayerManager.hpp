@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include <Activities/EducationActivity.hpp>
+
 class EntertainmentActivity;
 class IActivity;
 
@@ -18,8 +20,8 @@ public:
     Player* getPlayer() const noexcept;
 
     void passYear() const noexcept;
-    void performEntertainmentActivity(EntertainmentActivity&) const noexcept;
-    [[nodiscard]] bool performEducationCourse(std::string const& courseName) const noexcept;
+    [[nodiscard]] bool performEntertainmentActivity(EntertainmentActivity&) const noexcept;
+    [[nodiscard]] bool performEducationCourse(std::string const&) const noexcept;
     [[nodiscard]] perform_job_error_e performJob() const noexcept;
 
 private:

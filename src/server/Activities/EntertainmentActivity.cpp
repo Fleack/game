@@ -2,21 +2,23 @@
 
 #include "../Player.hpp"
 
-#include <iostream>
-
 EntertainmentActivity::EntertainmentActivity()
 {
-    std::cout << "nigga";
 }
 
 EntertainmentActivity::~EntertainmentActivity()
 {
 }
 
-void EntertainmentActivity::perform(Player& player) noexcept
+bool EntertainmentActivity::perform(Player& player) noexcept
 {
-    player.increaseHappiness(20);
-    player.decreaseEnergy(10);
+    if (player.getMoney() < 500)
+    {
+        return false;
+    }
+    player.increaseHappiness(15);
+    player.increaseEnergy(5);
     player.increaseHealth(5);
     player.decreaseMoney(500);
+    return true;
 }

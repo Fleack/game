@@ -54,11 +54,11 @@ void Server::handleRequest()
         {
             handlePassYearRequest(jsonRequest);
         }
-        else if (command == "entertainment_a ctivity")
+        else if (command == "perform_entertainment_activity")
         {
             handleEntertainmentActivityRequest(jsonRequest);
         }
-        else if (command == "education_activity")
+        else if (command == "perform_education_activity")
         {
             handleEducationActivityRequest(jsonRequest);
         }
@@ -232,9 +232,14 @@ void Server::handleEntertainmentActivityRequest(json_t const&)
     try
     {
         EntertainmentActivity activity;
-        m_playerManager.performEntertainmentActivity(activity);
-
-        sendResponse(R"({"message": "Entertainment activity performed successfully"})", status::ok);
+        if (m_playerManager.performEntertainmentActivity(activity))
+        {
+            sendResponse(R"({"message": "Entertainment activity performed successfully"})", status::ok);
+        }
+        else
+        {
+            sendResponse(R"({"error": "Player doesn't have enough money"})", status::bad_request);
+        }
     }
     catch (std::exception const& e)
     {
@@ -250,15 +255,15 @@ void Server::handleEducationActivityRequest(json_t const& jsonRequest)
 
     try
     {
-        auto const courseName = jsonRequest["course_name"].get<std::string>();
+        // auto const courseName = jsonRequest["course_name"].get<std::string>();
 
-        if (m_playerManager.performEducationCourse(courseName))
+        if (m_playerManager.performEducationCourse(""))
         {
             sendResponse(R"({"message": "Education course performed successfully"})", status::ok);
         }
         else
         {
-            sendResponse(R"({"error": "Incorrect course name"})", status::bad_request);
+            sendResponse(R"({"error": "Not enoght money"})", status::bad_request);
         }
     }
     catch (json_t::exception const& e)

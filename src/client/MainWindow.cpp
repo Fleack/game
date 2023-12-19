@@ -1,9 +1,14 @@
 // mainwindow.cpp
 #include "MainWindow.hpp"
 
+#include "EducationPage.hpp"
 #include "JobsPage.hpp"
 
-// TODO REWORK SLOTS AND METHODS
+#include <QCloseEvent>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QMessageBox>
+
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow{parent}
 {
@@ -38,8 +43,26 @@ void MainWindow::onCreatePlayerClicked()
     connect(playerPage, &PlayerPage::backToMainMenuClicked, this, &MainWindow::onBackToMainMenuClicked);
     connect(playerPage, &PlayerPage::skillsClicked, this, &MainWindow::onSkillsClicked);
     connect(playerPage, &PlayerPage::jobsClicked, this, &MainWindow::onJobsClicked);
+    connect(playerPage, &PlayerPage::entertainmentClicked, this, &MainWindow::onEntertainmentClicked);
+    connect(playerPage, &PlayerPage::educationClicked, this, &MainWindow::onEducationClicked);
 
     setCentralWidget(playerPage);
+}
+
+void MainWindow::onEntertainmentClicked()
+{
+    auto* entertainmentPage = new EntertainmentPage(this);
+    connect(entertainmentPage, &EntertainmentPage::backToPlayerPageClicked, this, &MainWindow::onCreatePlayerClicked);
+
+    setCentralWidget(entertainmentPage);
+}
+
+void MainWindow::onEducationClicked()
+{
+    auto* educationPage = new EducationPage(this);
+    connect(educationPage, &EducationPage::backToPlayerPageClicked, this, &MainWindow::onCreatePlayerClicked);
+
+    setCentralWidget(educationPage);
 }
 
 void MainWindow::onSkillsClicked()
@@ -61,4 +84,38 @@ void MainWindow::onJobsClicked()
 void MainWindow::onExitClicked()
 {
     close();
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    // Handle the close event
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Выход", "Вы уверены, что хотите выйти?", QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::Yes)
+    {
+        terminateServer();
+        event->ignore();
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+
+void MainWindow::terminateServer()
+{
+    QNetworkAccessManager networkManager;
+    QJsonObject jsonObject;
+    jsonObject["command"] = "terminate_session";
+
+    QNetworkRequest request(QUrl("http://localhost:12345"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply* reply = networkManager.post(request, QJsonDocument(jsonObject).toJson());
+
+    qDebug() << "Terminate session request sent:\n" << jsonObject << '\n';
+
+    connect(reply, &QNetworkReply::finished, [reply]() {
+        reply->deleteLater();
+    });
 }

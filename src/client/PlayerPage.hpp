@@ -1,6 +1,8 @@
-// characterpage.h
-#ifndef CHARACTERPAGE_H
-#define CHARACTERPAGE_H
+// playerpage.hpp
+#ifndef PLAYERPAGE_H
+#define PLAYERPAGE_H
+
+#include "EntertainmentPage.hpp"
 
 #include <QLabel>
 #include <QNetworkAccessManager>
@@ -21,14 +23,14 @@ signals:
     void entertainmentClicked();
     void educationClicked();
     void backToMainMenuClicked();
-    void nextYearClicked();
 
 private:
     void createPlayerStats(QVBoxLayout*);
     void createButtons(QVBoxLayout*);
+    void nextYearClicked();
 
 private:
     QNetworkAccessManager* networkManager;
 };
 
-#endif // CHARACTERPAGE_H
+#endif // PLAYERPAGE_H

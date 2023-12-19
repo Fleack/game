@@ -1,4 +1,4 @@
-// characterpage.cpp
+// playerpage.cpp
 #include "PlayerPage.hpp"
 
 #include <QJsonDocument>
@@ -13,7 +13,6 @@ PlayerPage::PlayerPage(QWidget* parent)
     : QWidget(parent)
     , networkManager(new QNetworkAccessManager(this))
 {
-    // Buttons
     QVBoxLayout* layout = new QVBoxLayout(this);
     createPlayerStats(layout);
     createButtons(layout);
@@ -21,6 +20,13 @@ PlayerPage::PlayerPage(QWidget* parent)
 
 void PlayerPage::createPlayerStats(QVBoxLayout* layout)
 {
+    // Clear the layout before adding new labels
+    QLayoutItem* item;
+    while ((item = layout->takeAt(0)) != nullptr) {
+        delete item->widget();
+        delete item;
+    }
+
     QLabel* nameLabel = new QLabel("Имя: ", this);
     QLabel* healthLabel = new QLabel("Здоровье: ", this);
     QLabel* energyLabel = new QLabel("Энергия: ", this);
@@ -37,17 +43,15 @@ void PlayerPage::createPlayerStats(QVBoxLayout* layout)
     layout->addWidget(moneyLabel);
     layout->addWidget(jobLabel);
 
-    // Делаем запрос к серверу для получения статистики игрока
     QJsonObject jsonObject;
     jsonObject["command"] = "get_player_stats";
 
-    QNetworkRequest request(QUrl("http://localhost:12345")); // Замените на ваш URL сервера
+    QNetworkRequest request(QUrl("http://localhost:12345"));
 
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkReply* reply = networkManager->post(request, QJsonDocument(jsonObject).toJson());
 
-    // Обработка ответа
     connect(reply, &QNetworkReply::finished, [this, reply, nameLabel, healthLabel, energyLabel, happinessLabel, ageLabel, moneyLabel, jobLabel]() {
         if (reply->error() == QNetworkReply::NoError)
         {
@@ -78,7 +82,6 @@ void PlayerPage::createPlayerStats(QVBoxLayout* layout)
         }
         else
         {
-            // Ошибка при отправке запроса
             qDebug() << "Error: " << reply->errorString();
         }
 
@@ -93,19 +96,21 @@ void PlayerPage::createButtons(QVBoxLayout* layout)
     QPushButton* entertainmentButton = new QPushButton("Развлечения", this);
     QPushButton* educationButton = new QPushButton("Обучение", this);
     QPushButton* backButton = new QPushButton("Назад", this);
+    QPushButton* nextYearButton = new QPushButton("Следующий год", this);
 
+    layout->addWidget(nextYearButton);
     layout->addWidget(jobsButton);
     layout->addWidget(skillsButton);
     layout->addWidget(entertainmentButton);
     layout->addWidget(educationButton);
     layout->addWidget(backButton);
 
+    connect(nextYearButton, &QPushButton::clicked, this, &PlayerPage::nextYearClicked);
     connect(jobsButton, &QPushButton::clicked, this, &PlayerPage::jobsClicked);
     connect(skillsButton, &QPushButton::clicked, this, &PlayerPage::skillsClicked);
     connect(entertainmentButton, &QPushButton::clicked, this, &PlayerPage::entertainmentClicked);
     connect(educationButton, &QPushButton::clicked, this, &PlayerPage::educationClicked);
     connect(backButton, &QPushButton::clicked, this, [this]() {
-        // Добавим подтверждающий диалог
         QMessageBox msgBox(
             QMessageBox::Question,
             "Вернуться в главное меню",
@@ -122,3 +127,29 @@ void PlayerPage::createButtons(QVBoxLayout* layout)
     });
 }
 
+void PlayerPage::nextYearClicked()
+{
+    // Send a request to the server with command = "pass_year"
+    QJsonObject jsonObject;
+    jsonObject["command"] = "pass_year";
+
+    QNetworkRequest request(QUrl("http://localhost:12345"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply* reply = networkManager->post(request, QJsonDocument(jsonObject).toJson());
+
+    connect(reply, &QNetworkReply::finished, [this, reply]() {
+        if (reply->error() == QNetworkReply::NoError)
+        {
+            auto* boxLayout = static_cast<QVBoxLayout*>(layout());
+            createPlayerStats(boxLayout);
+            createButtons(boxLayout);
+        }
+        else
+        {
+            qDebug() << "Error passing the year: " << reply->errorString();
+        }
+
+        reply->deleteLater();
+    });
+}

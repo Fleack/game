@@ -35,29 +35,35 @@ Player* PlayerManager::getPlayer() const noexcept
 
 void PlayerManager::passYear() const noexcept
 {
+    if (!m_player) { return; }
     m_player->increaseAge();
     m_player->increaseEnergy(100);
     std::cout << "Year passed" << std::endl;
 }
 
-void PlayerManager::performEntertainmentActivity(EntertainmentActivity& activity) const noexcept
+bool PlayerManager::performEntertainmentActivity(EntertainmentActivity& activity) const noexcept
 {
-    activity.perform(*m_player);
+    if (!m_player) { return false; }
     std::cout << "Permormed activity: " << activity.name() << std::endl;
+    return activity.perform(*m_player);
 }
 
 bool PlayerManager::performEducationCourse(std::string const&) const noexcept
 {
-    // TODO rework with new EducationActivity impl
-    return true;
+    if (!m_player) { return false; }
+    // TODO rework
+    std::unordered_map<skills_e, int16_t> const skills{
+        {skills_e::MATH, 10},
+        {skills_e::HISTORY, 10},
+        {skills_e::PHYSICS, 10},
+        {skills_e::LITERATURE, 10},
+        {skills_e::PROGRAMMING, 10}};
+    EducationActivity const activity("course", 10, 10, 10'000, skills);
+    return activity.perform(*m_player);;
 }
 
 perform_job_error_e PlayerManager::performJob() const noexcept
 {
-    if (!m_player)
-    {
-        return perform_job_error_e::UNSPECIFIED;
-    }
-
-    return m_player->performJob();;
+    if (!m_player) { return perform_job_error_e::UNSPECIFIED; }
+    return m_player->performJob();
 }

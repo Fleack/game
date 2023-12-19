@@ -16,6 +16,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget* parent = nullptr);
 
+protected:
+    void closeEvent(QCloseEvent* event) override;
+
 private slots:
     void onNewGameClicked();
     void onExitClicked();
@@ -23,6 +26,9 @@ private slots:
     void onCreatePlayerClicked();
     void onSkillsClicked();
     void onJobsClicked();
+    void onEntertainmentClicked();
+    void onEducationClicked();
+    void terminateServer();
 };
 
 #endif // MAINWINDOW_HPP

@@ -22,8 +22,7 @@ WorldManager::WorldManager()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<size_t> dist(6, 12);
-    // Generate from 6 to 12 random jobs
+    std::uniform_int_distribution<size_t> dist(3, 6);
     for (int i = 0; i < dist(gen); ++i)
     {
         m_jobs.emplace_back(generateRandomJob());
