@@ -1,11 +1,12 @@
-// jobs_page.hpp
-#ifndef JOBS_PAGE_HPP
-#define JOBS_PAGE_HPP
+#pragma once
 
+#include <QLabel>
 #include <QNetworkAccessManager>
+#include <QPushButton>
+#include <QTableWidget>
 #include <QWidget>
 
-class JobsPage : public QWidget
+class JobsPage final : public QWidget
 {
     Q_OBJECT
 
@@ -25,11 +26,15 @@ private:
     void processJobs(QJsonDocument const& jsonDocument);
     void fetchPlayerJob();
     void processPlayerJob(QJsonDocument const& jsonDocument);
-    void hideQuitJobButton(bool);
+    void hideQuitJobButton(bool) const;
     void showVacanciesTable();
     void onWorkClicked();
+    void createJobDescription(QJsonObject const& json, QLabel* jobDescriptionLabel);
+    void applyLabelStyle(QLabel* label);
+    void applyButtonStyle(QPushButton* button);
+    void applyTableStyle(QTableWidget* table);
+    void applyJobApplyButtonStyle(QPushButton* button);
 
-    QNetworkAccessManager* networkManager;
+private:
+    QNetworkAccessManager* m_networkManager;
 };
-
-#endif // JOBS_PAGE_HPP

@@ -11,7 +11,8 @@
 Server::Server(asio::io_context& ioContext, uint16_t port)
     : m_acceptor{ioContext, {tcp_t::v4(), port}}
     , m_socket{ioContext}
-{}
+{
+}
 
 void Server::start()
 {
@@ -153,18 +154,17 @@ void Server::handlePassYearRequest(json_t const&)
     {
         m_playerManager.passYear();
 
-        // Removing random amount of jobs
-        uint8_t rnd = rand() % MAX_RANDOM_JOBS;
-        for (uint8_t i = 0; i < rnd; ++i)
-        {
-            m_worldManager.removeRandomJob();
-        }
-
-        // Adding random amount of new jobs
-        rnd = rand() % MAX_RANDOM_JOBS;
-        for (uint8_t i = 0; i < rnd; ++i)
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<size_t> dist(0, MAX_RANDOM_JOBS);
+        for (uint8_t i = 0; i < dist(gen); ++i)
         {
             m_worldManager.addNewRandomJob();
+        }
+
+        for (uint8_t i = 0; i < dist(gen); ++i)
+        {
+            m_worldManager.removeRandomJob();
         }
 
         sendResponse(R"({"message": "Year passed successfully"})", status::ok);

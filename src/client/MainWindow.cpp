@@ -1,8 +1,10 @@
-// mainwindow.cpp
 #include "MainWindow.hpp"
 
 #include "EducationPage.hpp"
+#include "EntertainmentPage.hpp"
 #include "JobsPage.hpp"
+#include "MainMenuPage.hpp"
+#include "PlayerSkillsPage.hpp"
 
 #include <QCloseEvent>
 #include <QJsonDocument>
@@ -18,11 +20,14 @@ MainWindow::MainWindow(QWidget* parent)
     connect(mainMenuPage, &MainMenuPage::exitClicked, this, &MainWindow::onExitClicked);
 
     setCentralWidget(mainMenuPage);
+
+    setFixedSize(800, 890);
 }
 
 void MainWindow::onNewGameClicked()
 {
     auto* createPlayerPage = new CreatePlayerPage(this);
+
     connect(createPlayerPage, &CreatePlayerPage::backClicked, this, &MainWindow::onBackToMainMenuClicked);
     connect(createPlayerPage, &CreatePlayerPage::createPlayerClicked, this, &MainWindow::onCreatePlayerClicked);
 
@@ -32,14 +37,17 @@ void MainWindow::onNewGameClicked()
 void MainWindow::onBackToMainMenuClicked()
 {
     auto* mainMenuPage = new MainMenuPage(this);
+
     connect(mainMenuPage, &MainMenuPage::newGameClicked, this, &MainWindow::onNewGameClicked);
     connect(mainMenuPage, &MainMenuPage::exitClicked, this, &MainWindow::onExitClicked);
+
     setCentralWidget(mainMenuPage);
 }
 
 void MainWindow::onCreatePlayerClicked()
 {
     auto* playerPage = new PlayerPage(this);
+
     connect(playerPage, &PlayerPage::backToMainMenuClicked, this, &MainWindow::onBackToMainMenuClicked);
     connect(playerPage, &PlayerPage::skillsClicked, this, &MainWindow::onSkillsClicked);
     connect(playerPage, &PlayerPage::jobsClicked, this, &MainWindow::onJobsClicked);
@@ -52,6 +60,7 @@ void MainWindow::onCreatePlayerClicked()
 void MainWindow::onEntertainmentClicked()
 {
     auto* entertainmentPage = new EntertainmentPage(this);
+
     connect(entertainmentPage, &EntertainmentPage::backToPlayerPageClicked, this, &MainWindow::onCreatePlayerClicked);
 
     setCentralWidget(entertainmentPage);
@@ -60,6 +69,7 @@ void MainWindow::onEntertainmentClicked()
 void MainWindow::onEducationClicked()
 {
     auto* educationPage = new EducationPage(this);
+
     connect(educationPage, &EducationPage::backToPlayerPageClicked, this, &MainWindow::onCreatePlayerClicked);
 
     setCentralWidget(educationPage);
@@ -68,6 +78,7 @@ void MainWindow::onEducationClicked()
 void MainWindow::onSkillsClicked()
 {
     auto* skillsPage = new PlayerSkillsPage(this);
+
     connect(skillsPage, &PlayerSkillsPage::backToPlayerPageClicked, this, &MainWindow::onCreatePlayerClicked);
 
     setCentralWidget(skillsPage);
@@ -76,6 +87,7 @@ void MainWindow::onSkillsClicked()
 void MainWindow::onJobsClicked()
 {
     auto* jobsPage = new JobsPage(this);
+
     connect(jobsPage, &JobsPage::backToPlayerPageClicked, this, &MainWindow::onCreatePlayerClicked);
 
     setCentralWidget(jobsPage);
@@ -88,13 +100,11 @@ void MainWindow::onExitClicked()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    // Handle the close event
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Выход", "Вы уверены, что хотите выйти?", QMessageBox::Yes | QMessageBox::No);
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Выход", "Вы уверены, что хотите выйти?", QMessageBox::Yes | QMessageBox::No);
     if (reply == QMessageBox::Yes)
     {
         terminateServer();
-        event->ignore();
+        event->accept();
     }
     else
     {
@@ -113,7 +123,8 @@ void MainWindow::terminateServer()
 
     QNetworkReply* reply = networkManager.post(request, QJsonDocument(jsonObject).toJson());
 
-    qDebug() << "Terminate session request sent:\n" << jsonObject << '\n';
+    qDebug() << "Terminate session request sent:\n"
+             << jsonObject << '\n';
 
     connect(reply, &QNetworkReply::finished, [reply]() {
         reply->deleteLater();

@@ -1,13 +1,11 @@
-// entertainmentpage.hpp
-#ifndef ENTERTAINMENTPAGE_HPP
-#define ENTERTAINMENTPAGE_HPP
+#pragma once
 
+#include <QLabel>
 #include <QNetworkAccessManager>
 #include <QPushButton>
-#include <QVBoxLayout>
 #include <QWidget>
 
-class EntertainmentPage : public QWidget
+class EntertainmentPage final : public QWidget
 {
     Q_OBJECT
 
@@ -23,9 +21,9 @@ private slots:
 
 private:
     void createLayout();
+    void applyButtonStyle(QPushButton* button);
+    void applyDescriptionLabelStyle(QLabel* label);
 
 private:
-    QNetworkAccessManager* networkManager;
+    QNetworkAccessManager* m_networkManager;
 };
-
-#endif // ENTERTAINMENTPAGE_HPP

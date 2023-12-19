@@ -1,34 +1,41 @@
-// entertainmentpage.cpp
 #include "EntertainmentPage.hpp"
 
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLabel>
 #include <QNetworkReply>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 EntertainmentPage::EntertainmentPage(QWidget* parent)
     : QWidget(parent)
-    , networkManager(new QNetworkAccessManager(this))
 {
-    createLayout();
-}
+    auto* layout = new QVBoxLayout(this);
 
-void EntertainmentPage::createLayout()
-{
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    setAttribute(Qt::WA_StyledBackground, true);
+    setStyleSheet("EntertainmentPage {"
+                  "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #34495E);"
+                  "}");
 
-    QLabel* descriptionLabel = new QLabel("Больше активностей будет добавлено в будущем...\n\nХарактеристика:\nЭнергия +5\nЗдоровье +5\nСчастье +15\nДеньги -500", this);
-    layout->addWidget(descriptionLabel);
+    auto* descriptionLabel = new QLabel("Больше активностей будет добавлено в будущем...\n\n"
+                                        "Характеристики:\n"
+                                        "Энергия: -5\n"
+                                        "Здоровье: +5\n"
+                                        "Счастье: +15\n"
+                                        "Деньги: -500", this);
+    applyDescriptionLabelStyle(descriptionLabel);
 
-    QPushButton* entertainButton = new QPushButton("Пойти развлечься", this);
-    layout->addWidget(entertainButton);
+    auto* entertainButton = new QPushButton("Пойти развлечься", this);
+    auto* backButton = new QPushButton("Назад", this);
+
+    applyButtonStyle(entertainButton);
+    applyButtonStyle(backButton);
+
+    layout->addWidget(descriptionLabel, 0, Qt::AlignHCenter);
+    layout->addWidget(entertainButton, 0, Qt::AlignHCenter);
+    layout->addWidget(backButton, 0, Qt::AlignHCenter);
 
     connect(entertainButton, &QPushButton::clicked, this, &EntertainmentPage::onEntertainClicked);
-
-    QPushButton* backButton = new QPushButton("Назад", this);
-    layout->addWidget(backButton);
-
     connect(backButton, &QPushButton::clicked, this, &EntertainmentPage::onBackClicked);
 }
 
@@ -40,29 +47,46 @@ void EntertainmentPage::onEntertainClicked()
     QJsonObject requestBody;
     requestBody["command"] = "perform_entertainment_activity";
 
-    QJsonDocument requestData(requestBody);
-    QByteArray requestDataBytes = requestData.toJson();
+    QJsonDocument const requestData(requestBody);
+    QByteArray const requestDataBytes = requestData.toJson();
 
-    QNetworkReply* reply = networkManager->post(request, requestDataBytes);
+    QNetworkReply* reply = m_networkManager->post(request, requestDataBytes);
 
-    connect(reply, &QNetworkReply::finished, [this, reply]() {
-        if (reply->error() == QNetworkReply::NoError)
-        {
-            qDebug() << "Successfully performed entertainment activity";
-
-            // Optionally, update the UI or take other actions if needed
-        }
-        else
-        {
-            qDebug() << "Error performing entertainment activity:" << reply->errorString();
-        }
-
+    connect(reply, &QNetworkReply::finished, [reply]() {
         reply->deleteLater();
     });
 }
 
 void EntertainmentPage::onBackClicked()
 {
-    // Emit the signal when the "Назад" button is clicked
     emit backToPlayerPageClicked();
+}
+
+void EntertainmentPage::applyButtonStyle(QPushButton* button)
+{
+    button->setStyleSheet("QPushButton {"
+                          "    background-color: #3498DB;"
+                          "    border: none;"
+                          "    color: white;"
+                          "    padding: 10px 20px;"
+                          "    font-size: 16px;"
+                          "    border-radius: 4px;"
+                          "}"
+                          "QPushButton:hover {"
+                          "    background-color: #2980B9;"
+                          "    color: white;"
+                          "    border: 1px solid #3498DB;"
+                          "}");
+
+    button->setFixedWidth(200);
+}
+
+void EntertainmentPage::applyDescriptionLabelStyle(QLabel* label)
+{
+    label->setStyleSheet("QLabel {"
+                         "    color: white;"
+                         "    padding: 15px;"
+                         "    font-size: 18px;"
+                         "    font-weight: bold;"
+                         "}");
 }

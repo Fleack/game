@@ -95,8 +95,8 @@ std::unique_ptr<JobActivity> WorldManager::generateRandomJob()
     std::mt19937 gen(rd());
     std::uniform_int_distribution<size_t> dist1(10, 20);
     std::uniform_int_distribution<size_t> dist2(5, 10);
-    std::uniform_int_distribution<size_t> dist3(0, COMPANY_NAMES.size());
-    std::uniform_int_distribution<size_t> dist4(0, PROFESSIONS.size());
+    std::uniform_int_distribution<size_t> dist3(0, COMPANY_NAMES.size() - 1);
+    std::uniform_int_distribution<size_t> dist4(0, PROFESSIONS.size() - 1);
 
     uint32_t salaryMin = 250;
     uint32_t salaryMax = 5000;

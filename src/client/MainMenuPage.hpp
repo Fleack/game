@@ -1,20 +1,19 @@
-// mainmenupage.h
-#ifndef MAINMENUPAGE_H
-#define MAINMENUPAGE_H
+#pragma once
 
 #include <QPushButton>
 #include <QWidget>
 
-class MainMenuPage : public QWidget
+class MainMenuPage final : public QWidget
 {
     Q_OBJECT
 
 public:
-    MainMenuPage(QWidget* parent = nullptr);
+    explicit MainMenuPage(QWidget* parent = nullptr);
 
 signals:
     void newGameClicked();
     void exitClicked();
-};
 
-#endif // MAINMENUPAGE_H
+private:
+    static void applyButtonStyle(QPushButton* button);
+};

@@ -1,8 +1,4 @@
-// playerpage.hpp
-#ifndef PLAYERPAGE_H
-#define PLAYERPAGE_H
-
-#include "EntertainmentPage.hpp"
+#pragma once
 
 #include <QLabel>
 #include <QNetworkAccessManager>
@@ -10,12 +6,12 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-class PlayerPage : public QWidget
+class PlayerPage final : public QWidget
 {
     Q_OBJECT
 
 public:
-    PlayerPage(QWidget* parent = nullptr);
+    explicit PlayerPage(QWidget* parent = nullptr);
 
 signals:
     void jobsClicked();
@@ -28,9 +24,13 @@ private:
     void createPlayerStats(QVBoxLayout*);
     void createButtons(QVBoxLayout*);
     void nextYearClicked();
+    void applyLabelStyle(QLabel* label);
+    void applyButtonStyle(QPushButton* button);
+    void updateLabelWithColor(QLabel* label, QString const& text, QColor const& color);
+    QColor getColorForValue(double value);
+
+    static void clearPage(QVBoxLayout*);
 
 private:
-    QNetworkAccessManager* networkManager;
+    QNetworkAccessManager* m_networkManager;
 };
-
-#endif // PLAYERPAGE_H

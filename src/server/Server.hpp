@@ -38,7 +38,7 @@ private:
     void sendResponse(std::string const& /* body */, beast::http::status);
 
 private:
-    static constexpr uint8_t MAX_RANDOM_JOBS = 6;
+    static constexpr uint8_t MAX_RANDOM_JOBS = 4;
     static constexpr uint8_t HTTP_VERSION = 11;
 
     bool m_terminate{false};

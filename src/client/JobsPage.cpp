@@ -1,7 +1,5 @@
-// jobspage.cpp
 #include "JobsPage.hpp"
 
-#include <QDebug>
 #include <QHeaderView>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -15,33 +13,43 @@
 
 JobsPage::JobsPage(QWidget* parent)
     : QWidget(parent)
-    , networkManager(new QNetworkAccessManager(this))
+    , m_networkManager(new QNetworkAccessManager(this))
 {
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    auto* layout = new QVBoxLayout(this);
 
-    QTableWidget* jobsTable = new QTableWidget(this);
+    setAttribute(Qt::WA_StyledBackground, true);
+    setStyleSheet("JobsPage {"
+                  "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #34495E);"
+                  "}");
+
+    auto* jobsTable = new QTableWidget(this);
+
     jobsTable->setObjectName("jobsTable");
-    jobsTable->setColumnCount(7);
-    jobsTable->setHorizontalHeaderLabels({"ID", "Название", "Зарплата", "Расход энергии", "Упадок здоровья", "Happiness Decrease", "Действия"});
+    jobsTable->setColumnCount(6);
+    jobsTable->setHorizontalHeaderLabels({"Название", "Зарплата", "Расход энергии", "Упадок здоровья", "Упадок счастья", "Действия"});
     jobsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    QLabel* jobDescriptionLabel = new QLabel(this);
+    auto* jobDescriptionLabel = new QLabel(this);
+
+    auto* workButton = new QPushButton("Работать", this);
+    auto* quitJobButton = new QPushButton("Уволиться", this);
+    auto* backButton = new QPushButton("Назад", this);
+
+    applyLabelStyle(jobDescriptionLabel);
+    applyButtonStyle(workButton);
+    applyButtonStyle(quitJobButton);
+    applyButtonStyle(backButton);
+
     jobDescriptionLabel->setObjectName("jobDescriptionLabel");
-
-    QPushButton* quitJobButton = new QPushButton("Уволиться", this);
+    workButton->setObjectName("workButton");
     quitJobButton->setObjectName("quitJobButton");
-
-    QPushButton* backButton = new QPushButton("Назад", this);
     backButton->setObjectName("backButton");
 
-    QPushButton* workButton = new QPushButton("Работать", this);
-    workButton->setObjectName("workButton");
-
     layout->addWidget(jobsTable);
-    layout->addWidget(jobDescriptionLabel);
-    layout->addWidget(workButton);  // Make sure to add the "Работать" button to the layout
-    layout->addWidget(quitJobButton);
-    layout->addWidget(backButton);
+    layout->addWidget(jobDescriptionLabel, 0, Qt::AlignHCenter);
+    layout->addWidget(workButton, 0, Qt::AlignHCenter);
+    layout->addWidget(quitJobButton, 0, Qt::AlignHCenter);
+    layout->addWidget(backButton, 0, Qt::AlignHCenter);
 
     connect(quitJobButton, &QPushButton::clicked, this, &JobsPage::onQuitJobClicked);
     connect(backButton, &QPushButton::clicked, this, &JobsPage::onBackClicked);
@@ -64,21 +72,23 @@ void JobsPage::fetchJobs()
     QJsonObject requestBody;
     requestBody["command"] = "get_jobs";
 
-    QJsonDocument requestData(requestBody);
-    QByteArray requestDataBytes = requestData.toJson();
+    QJsonDocument const requestData(requestBody);
+    QByteArray const requestDataBytes = requestData.toJson();
 
-    QNetworkReply* reply = networkManager->post(request, requestDataBytes);
+    QNetworkReply* reply = m_networkManager->post(request, requestDataBytes);
 
     connect(reply, &QNetworkReply::finished, [this, reply]() {
         if (reply->error() == QNetworkReply::NoError)
         {
-            QByteArray responseData = reply->readAll();
-            QJsonDocument jsonDocument = QJsonDocument::fromJson(responseData);
+            const QByteArray responseData = reply->readAll();
+            const QJsonDocument jsonDocument = QJsonDocument::fromJson(responseData);
             processJobs(jsonDocument);
-        }
-        else
-        {
-            qDebug() << "Error fetching jobs:" << reply->errorString();
+
+            auto* jobsTable = findChild<QTableWidget*>("jobsTable");
+            if (jobsTable)
+            {
+                applyTableStyle(jobsTable);
+            }
         }
 
         hideQuitJobButton(true);
@@ -89,12 +99,11 @@ void JobsPage::fetchJobs()
 
 void JobsPage::processJobs(QJsonDocument const& jsonDocument)
 {
-    QTableWidget* jobsTable = findChild<QTableWidget*>("jobsTable");
-    QPushButton* workButton = findChild<QPushButton*>("workButton");
+    auto* jobsTable = findChild<QTableWidget*>("jobsTable");
+    auto* workButton = findChild<QPushButton*>("workButton");
 
     hideQuitJobButton(true);
     workButton->setVisible(false);
-
 
     if (jobsTable && jsonDocument.isObject())
     {
@@ -108,31 +117,33 @@ void JobsPage::processJobs(QJsonDocument const& jsonDocument)
             QJsonObject jobObject = jobValue.toObject();
             int id = jobObject["id"].toInt();
             QString name = jobObject["name"].toString();
-            int salary = jobObject["salary"].toInt();
-            int energyDecrease = jobObject["energy_decrease"].toInt();
-            int healthDecrease = jobObject["health_decrease"].toInt();
-            int happinessDecrease = jobObject["happiness_decrease"].toInt();
+            int const salary = jobObject["salary"].toInt();
+            int const energyDecrease = jobObject["energy_decrease"].toInt();
+            int const healthDecrease = jobObject["health_decrease"].toInt();
+            int const happinessDecrease = jobObject["happiness_decrease"].toInt();
 
-            int row = jobsTable->rowCount();
+            int const row = jobsTable->rowCount();
             jobsTable->insertRow(row);
-            jobsTable->setItem(row, 0, new QTableWidgetItem(QString::number(id)));
-            jobsTable->setItem(row, 1, new QTableWidgetItem(name));
-            jobsTable->setItem(row, 2, new QTableWidgetItem(QString::number(salary)));
-            jobsTable->setItem(row, 3, new QTableWidgetItem(QString::number(energyDecrease)));
-            jobsTable->setItem(row, 4, new QTableWidgetItem(QString::number(healthDecrease)));
-            jobsTable->setItem(row, 5, new QTableWidgetItem(QString::number(happinessDecrease)));
 
-            QPushButton* applyJobButton = new QPushButton("Устроиться", this);
+            jobsTable->setItem(row, 0, new QTableWidgetItem(name));
+            jobsTable->setItem(row, 1, new QTableWidgetItem(QString::number(salary)));
+            jobsTable->setItem(row, 2, new QTableWidgetItem(QString::number(energyDecrease)));
+            jobsTable->setItem(row, 3, new QTableWidgetItem(QString::number(healthDecrease)));
+            jobsTable->setItem(row, 4, new QTableWidgetItem(QString::number(happinessDecrease)));
+
+            auto* applyJobButton = new QPushButton("Устроиться", this);
+            applyJobApplyButtonStyle(applyJobButton);
+
             connect(applyJobButton, &QPushButton::clicked, [this, id]() {
                 onApplyJobClicked(id);
             });
 
-            jobsTable->setCellWidget(row, 6, applyJobButton);
+            jobsTable->setCellWidget(row, 5, applyJobButton);
         }
     }
 }
 
-void JobsPage::onApplyJobClicked(int jobId)
+void JobsPage::onApplyJobClicked(int const jobId)
 {
     QNetworkRequest request(QUrl("http://localhost:12345"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -141,22 +152,13 @@ void JobsPage::onApplyJobClicked(int jobId)
     requestBody["command"] = "apply_job";
     requestBody["job_id"] = jobId;
 
-    QJsonDocument requestData(requestBody);
-    QByteArray requestDataBytes = requestData.toJson();
+    QJsonDocument const requestData(requestBody);
+    QByteArray const requestDataBytes = requestData.toJson();
 
-    QNetworkReply* reply = networkManager->post(request, requestDataBytes);
+    QNetworkReply* reply = m_networkManager->post(request, requestDataBytes);
 
     connect(reply, &QNetworkReply::finished, [this, reply]() {
-        if (reply->error() == QNetworkReply::NoError)
-        {
-            qDebug() << "Successfully applied for job";
-
-            fetchPlayerJob();
-        }
-        else
-        {
-            qDebug() << "Error applying for job:" << reply->errorString();
-        }
+        if (reply->error() == QNetworkReply::NoError) { fetchPlayerJob(); }
 
         reply->deleteLater();
     });
@@ -170,21 +172,17 @@ void JobsPage::fetchPlayerJob()
     QJsonObject requestBody;
     requestBody["command"] = "get_player_job";
 
-    QJsonDocument requestData(requestBody);
-    QByteArray requestDataBytes = requestData.toJson();
+    QJsonDocument const requestData(requestBody);
+    QByteArray const requestDataBytes = requestData.toJson();
 
-    QNetworkReply* reply = networkManager->post(request, requestDataBytes);
+    QNetworkReply* reply = m_networkManager->post(request, requestDataBytes);
 
     connect(reply, &QNetworkReply::finished, [this, reply]() {
         if (reply->error() == QNetworkReply::NoError)
         {
-            QByteArray responseData = reply->readAll();
-            QJsonDocument jsonDocument = QJsonDocument::fromJson(responseData);
+            QByteArray const responseData = reply->readAll();
+            QJsonDocument const jsonDocument = QJsonDocument::fromJson(responseData);
             processPlayerJob(jsonDocument);
-        }
-        else
-        {
-            qDebug() << "Error fetching player job:" << reply->errorString();
         }
 
         reply->deleteLater();
@@ -193,9 +191,9 @@ void JobsPage::fetchPlayerJob()
 
 void JobsPage::processPlayerJob(QJsonDocument const& jsonDocument)
 {
-    QTableWidget* jobsTable = findChild<QTableWidget*>("jobsTable");
-    QLabel* jobDescriptionLabel = findChild<QLabel*>("jobDescriptionLabel");
-    QPushButton* workButton = findChild<QPushButton*>("workButton");
+    auto* jobsTable = findChild<QTableWidget*>("jobsTable");
+    auto* jobDescriptionLabel = findChild<QLabel*>("jobDescriptionLabel");
+    auto* workButton = findChild<QPushButton*>("workButton");
 
     if (jobsTable && jobDescriptionLabel && workButton && jsonDocument.isObject())
     {
@@ -203,28 +201,9 @@ void JobsPage::processPlayerJob(QJsonDocument const& jsonDocument)
 
         if (jsonObject.contains("job"))
         {
-            QJsonObject jobObject = jsonObject["job"].toObject();
-            QString name = jobObject["name"].toString();
-            int salary = jobObject["salary"].toInt();
-            int energyDecrease = jobObject["energy_decrease"].toInt();
-            int healthDecrease = jobObject["health_decrease"].toInt();
-            int happinessDecrease = jobObject["happiness_decrease"].toInt();
-
+            createJobDescription(jsonObject, jobDescriptionLabel);
             jobsTable->setVisible(false);
-
-            QString jobDescription = QString("Название: %1\nЗарплата: %2\n"
-                                             "Расход энергии: %3\nУпадок здоровья: %4\n"
-                                             "Упадок счастья: %5")
-                                         .arg(name)
-                                         .arg(salary)
-                                         .arg(energyDecrease)
-                                         .arg(healthDecrease)
-                                         .arg(happinessDecrease);
-
-            jobDescriptionLabel->setText(jobDescription);
-            jobDescriptionLabel->setVisible(true);
             hideQuitJobButton(false);
-
             workButton->setVisible(true);
         }
         else
@@ -246,23 +225,13 @@ void JobsPage::onQuitJobClicked()
     QJsonObject requestBody;
     requestBody["command"] = "quit_job";
 
-    QJsonDocument requestData(requestBody);
-    QByteArray requestDataBytes = requestData.toJson();
+    QJsonDocument const requestData(requestBody);
+    QByteArray const requestDataBytes = requestData.toJson();
 
-    QNetworkReply* reply = networkManager->post(request, requestDataBytes);
+    QNetworkReply* reply = m_networkManager->post(request, requestDataBytes);
 
     connect(reply, &QNetworkReply::finished, [this, reply]() {
-        if (reply->error() == QNetworkReply::NoError)
-        {
-            qDebug() << "Successfully quit job";
-
-            // Instead of fetching jobs immediately, update the UI to show the vacancies table
-            showVacanciesTable();
-        }
-        else
-        {
-            qDebug() << "Error quitting job:" << reply->errorString();
-        }
+        if (reply->error() == QNetworkReply::NoError) { showVacanciesTable(); }
 
         reply->deleteLater();
     });
@@ -270,8 +239,8 @@ void JobsPage::onQuitJobClicked()
 
 void JobsPage::showVacanciesTable()
 {
-    QTableWidget* jobsTable = findChild<QTableWidget*>("jobsTable");
-    QLabel* jobDescriptionLabel = findChild<QLabel*>("jobDescriptionLabel");
+    auto* jobsTable = findChild<QTableWidget*>("jobsTable");
+    auto* jobDescriptionLabel = findChild<QLabel*>("jobDescriptionLabel");
 
     if (jobsTable && jobDescriptionLabel)
     {
@@ -287,12 +256,12 @@ void JobsPage::showVacanciesTable()
     }
 }
 
-void JobsPage::hideQuitJobButton(bool hide)
+void JobsPage::hideQuitJobButton(bool const hide) const
 {
-    QPushButton* quitJobButton = findChild<QPushButton*>("quitJobButton");
-
-    if (quitJobButton)
+    if (auto* quitJobButton = findChild<QPushButton*>("quitJobButton"))
+    {
         quitJobButton->setVisible(!hide);
+    }
 }
 
 void JobsPage::onWorkClicked()
@@ -303,21 +272,121 @@ void JobsPage::onWorkClicked()
     QJsonObject requestBody;
     requestBody["command"] = "perform_job";
 
-    QJsonDocument requestData(requestBody);
-    QByteArray requestDataBytes = requestData.toJson();
+    QJsonDocument const requestData(requestBody);
+    QByteArray const requestDataBytes = requestData.toJson();
 
-    QNetworkReply* reply = networkManager->post(request, requestDataBytes);
+    QNetworkReply* reply = m_networkManager->post(request, requestDataBytes);
 
-    connect(reply, &QNetworkReply::finished, [this, reply]() {
-        if (reply->error() == QNetworkReply::NoError)
-        {
-            qDebug() << "Successfully performed job";
-        }
-        else
-        {
-            qDebug() << "Error performing job:" << reply->errorString();
-        }
-
+    connect(reply, &QNetworkReply::finished, [reply]() {
         reply->deleteLater();
     });
 }
+
+void JobsPage::createJobDescription(QJsonObject const& json, QLabel* jobDescriptionLabel)
+{
+    QJsonObject jobObject = json["job"].toObject();
+    QString const name = jobObject["name"].toString();
+    int const salary = jobObject["salary"].toInt();
+    int const energyDecrease = jobObject["energy_decrease"].toInt();
+    int const healthDecrease = jobObject["health_decrease"].toInt();
+    int const happinessDecrease = jobObject["happiness_decrease"].toInt();
+
+    QString const jobDescriptionStyle = "QLabel {"
+                                        "    color: white;"
+                                        "    padding: 10px;"
+                                        "    border-radius: 5px;"
+                                        "    font-size: 20px;"
+                                        "}";
+
+    jobDescriptionLabel->setStyleSheet(jobDescriptionStyle);
+
+    QString const jobDescription = QString("<b>Текущая работа:</b><br>"
+                                           "<b>Название:</b> %1<br>"
+                                           "<b>Зарплата:</b> %2<br>"
+                                           "<b>Расход энергии:</b> %3<br>"
+                                           "<b>Упадок здоровья:</b> %4<br>"
+                                           "<b>Упадок счастья:</b> %5")
+                                       .arg(name)
+                                       .arg(salary)
+                                       .arg(energyDecrease)
+                                       .arg(healthDecrease)
+                                       .arg(happinessDecrease);
+
+    jobDescriptionLabel->setText(jobDescription);
+    jobDescriptionLabel->setVisible(true);
+}
+
+void JobsPage::applyLabelStyle(QLabel* label)
+{
+    label->setStyleSheet("QLabel {"
+                         "    font-size: 20px;"
+                         "    color: white;"
+                         "    margin-bottom: 10px;"
+                         "    qproperty-alignment: AlignTop;"
+                         "}");
+}
+
+void JobsPage::applyButtonStyle(QPushButton* button)
+{
+    button->setStyleSheet("QPushButton {"
+                          "    background-color: #3498DB;"
+                          "    border: none;"
+                          "    color: white;"
+                          "    padding: 10px 20px;"
+                          "    font-size: 16px;"
+                          "    border-radius: 4px;"
+                          "}"
+                          "QPushButton:hover {"
+                          "    background-color: #2980B9;"
+                          "    color: white;"
+                          "    border: 1px solid #3498DB;"
+                          "}");
+
+    button->setFixedWidth(200);
+}
+
+void JobsPage::applyJobApplyButtonStyle(QPushButton* button)
+{
+    button->setStyleSheet("QPushButton {"
+                          "    background-color: #4CAF50;"
+                          "    color: white;"
+                          "    padding: 8px 16px;"
+                          "    border: none;"
+                          "    border-radius: 4px;"
+                          "    text-align: center;"
+                          "    text-decoration: none;"
+                          "    font-size: 14px;"
+                          "    margin: 4px 2px;"
+                          "}"
+                          "QPushButton:hover {"
+                          "    background-color: #45a049;"
+                          "    color: white;"
+                          "    border: 1px solid #4CAF50;"
+                          "}");
+}
+
+void JobsPage::applyTableStyle(QTableWidget* table)
+{
+    table->setStyleSheet("QTableWidget {"
+                         "    background-color: white;"
+                         "    border: 1px solid #3498DB;"
+                         "    border-radius: 5px;"
+                         "}"
+                         "QTableWidget::item:selected {"
+                         "    background-color: #3498DB;"
+                         "    color: white;"
+                         "}");
+
+    table->horizontalHeader()->setStyleSheet("QHeaderView::section {"
+                                             "    background-color: #3498DB;"
+                                             "    color: white;"
+                                             "    padding: 10px;"
+                                             "    border: 1px solid #3498DB;"
+                                             "}"
+                                             "QHeaderView::section:checked {"
+                                             "    background-color: #2980B9;"
+                                             "}");
+
+    table->verticalHeader()->setDefaultSectionSize(80);
+}
+

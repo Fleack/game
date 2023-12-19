@@ -1,19 +1,16 @@
-// createplayerpage.h
-#ifndef CREATEPLAYERPAGE_H
-#define CREATEPLAYERPAGE_H
+#pragma once
 
 #include <QLineEdit>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QPushButton>
 #include <QWidget>
 
-class CreatePlayerPage : public QWidget
+class CreatePlayerPage final : public QWidget
 {
     Q_OBJECT
 
 public:
-    CreatePlayerPage(QWidget* parent = nullptr);
+    explicit CreatePlayerPage(QWidget* parent = nullptr);
 
 signals:
     void backClicked();
@@ -23,7 +20,9 @@ private slots:
     void onCreateClicked();
 
 private:
-    QNetworkAccessManager* networkManager;
-};
+    void applyStyles(QWidget* widget);
+    void applyButtonStyle(QPushButton* button);
 
-#endif // CREATEPLAYERPAGE_H
+private:
+    QNetworkAccessManager* m_networkManager;
+};

@@ -1,13 +1,11 @@
-// educationpage.hpp
-#ifndef EDUCATIONPAGE_HPP
-#define EDUCATIONPAGE_HPP
+#pragma once
 
+#include <QLabel>
 #include <QNetworkAccessManager>
 #include <QPushButton>
-#include <QVBoxLayout>
 #include <QWidget>
 
-class EducationPage : public QWidget
+class EducationPage final : public QWidget
 {
     Q_OBJECT
 
@@ -23,9 +21,9 @@ private slots:
 
 private:
     void createLayout();
+    void applyDescriptionLabelStyle(QLabel* label);
+    void applyButtonStyle(QPushButton* button);
 
 private:
-    QNetworkAccessManager* networkManager;
+    QNetworkAccessManager* m_networkManager;
 };
-
-#endif // EDUCATIONPAGE_HPP

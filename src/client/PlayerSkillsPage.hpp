@@ -1,11 +1,11 @@
-// playerskillspage.hpp
-#ifndef PLAYERSKILLSPAGE_HPP
-#define PLAYERSKILLSPAGE_HPP
+#pragma once
 
 #include <QNetworkAccessManager>
+#include <QPushButton>
+#include <QTableWidget>
 #include <QWidget>
 
-class PlayerSkillsPage : public QWidget
+class PlayerSkillsPage final : public QWidget
 {
     Q_OBJECT
 
@@ -20,7 +20,9 @@ private slots:
     void fetchPlayerSkills();
 
 private:
-    QNetworkAccessManager* networkManager;
-};
+    void applyTableStyle(QTableWidget* table);
+    void applyButtonStyle(QPushButton* button);
 
-#endif // PLAYERSKILLSPAGE_HPP
+private:
+    QNetworkAccessManager* m_networkManager;
+};

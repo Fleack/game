@@ -5,8 +5,6 @@
 #include <QApplication>
 #include <QThread>
 
-#define DEBUG
-
 void runServer()
 {
     try

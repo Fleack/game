@@ -1,20 +1,16 @@
-// mainwindow.hpp
-#ifndef MAINWINDOW_HPP
-#define MAINWINDOW_HPP
+#pragma once
 
 #include "CreatePlayerPage.hpp"
-#include "MainMenuPage.hpp"
 #include "PlayerPage.hpp"
-#include "PlayerSkillsPage.hpp"
 
 #include <QMainWindow>
 
-class MainWindow : public QMainWindow
+class MainWindow final : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent = nullptr);
+    explicit MainWindow(QWidget* parent = nullptr);
 
 protected:
     void closeEvent(QCloseEvent* event) override;
@@ -28,7 +24,5 @@ private slots:
     void onJobsClicked();
     void onEntertainmentClicked();
     void onEducationClicked();
-    void terminateServer();
+    static void terminateServer();
 };
-
-#endif // MAINWINDOW_HPP

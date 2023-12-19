@@ -1,25 +1,47 @@
-// createplayerpage.cpp
 #include "CreatePlayerPage.hpp"
-
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkRequest>
+#include <QPushButton>
 #include <QVBoxLayout>
+#include <QLineEdit>
+#include <QDebug>
 
 CreatePlayerPage::CreatePlayerPage(QWidget* parent)
     : QWidget(parent)
-    , networkManager(new QNetworkAccessManager(this))
+    , m_networkManager(new QNetworkAccessManager(this))
 {
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    auto* layout = new QVBoxLayout(this);
 
-    QLineEdit* nameLineEdit = new QLineEdit(this);
+    auto* nameLineEdit = new QLineEdit(this);
+    auto* createButton = new QPushButton("Создать", this);
+    auto* backButton = new QPushButton("Назад", this);
+
+    setAttribute(Qt::WA_StyledBackground, true);
+    setStyleSheet("CreatePlayerPage {"
+                  "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #34495E);"
+                  "}");
+
+    nameLineEdit->setStyleSheet("QLineEdit {"
+                               "    background-color: #ECF0F1;"
+                               "    border: 1px solid #BDC3C7;"
+                               "    padding: 8px;"
+                               "    border-radius: 4px;"
+                               "}");
+
     nameLineEdit->setPlaceholderText("Введите имя");
-    QPushButton* createButton = new QPushButton("Создать", this);
-    QPushButton* backButton = new QPushButton("Назад", this);
 
-    layout->addWidget(nameLineEdit);
-    layout->addWidget(createButton);
-    layout->addWidget(backButton);
+    applyButtonStyle(createButton);
+    applyButtonStyle(backButton);
+
+    createButton->setFixedWidth(200);
+    backButton->setFixedWidth(200);
+
+    layout->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    layout->addWidget(nameLineEdit, 0, Qt::AlignHCenter);
+    layout->addWidget(createButton, 0, Qt::AlignHCenter);
+    layout->addWidget(backButton, 0, Qt::AlignHCenter);
+    layout->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
     connect(backButton, &QPushButton::clicked, this, &CreatePlayerPage::backClicked);
     connect(createButton, &QPushButton::clicked, this, &CreatePlayerPage::onCreateClicked);
@@ -27,48 +49,55 @@ CreatePlayerPage::CreatePlayerPage(QWidget* parent)
 
 void CreatePlayerPage::onCreateClicked()
 {
-    QLineEdit* nameLineEdit = dynamic_cast<QLineEdit*>(layout()->itemAt(0)->widget());
+    auto* nameLineEdit = findChild<QLineEdit*>();
     if (!nameLineEdit)
     {
         qDebug() << "nameLineEdit is nullptr!";
         return;
     }
 
-    QString playerName = nameLineEdit->text();
+    QString const playerName = nameLineEdit->text();
 
     if (playerName.isEmpty())
     {
-        // Если имя пустое, устанавливаем стиль с красной рамкой
-        nameLineEdit->setStyleSheet("border: 1px solid red;");
+        nameLineEdit->setStyleSheet("QLineEdit { border: 1px solid red; }");
         return;
     }
 
-    // Сбросите стиль, если поле валидно
     nameLineEdit->setStyleSheet("");
 
     QJsonObject jsonObject;
     jsonObject["command"] = "create_player";
     jsonObject["player_name"] = playerName;
 
-    QNetworkRequest request(QUrl("http://localhost:12345")); // Замените на ваш URL сервера
+    QNetworkRequest request(QUrl("http://localhost:12345"));
 
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply* reply = networkManager->post(request, QJsonDocument(jsonObject).toJson());
+    QNetworkReply* reply = m_networkManager->post(request, QJsonDocument(jsonObject).toJson());
 
-    // Обработка ответа
     connect(reply, &QNetworkReply::finished, [this, reply]() {
-        if (reply->error() == QNetworkReply::NoError)
-        {
-            // Успешный ответ от сервера, можно добавить дополнительную логику
-            emit createPlayerClicked();
-        }
-        else
-        {
-            // Ошибка при отправке запроса
-            qDebug() << "Error: " << reply->errorString();
-        }
+        if (reply->error() == QNetworkReply::NoError) { emit createPlayerClicked(); }
 
         reply->deleteLater();
     });
+}
+
+void CreatePlayerPage::applyButtonStyle(QPushButton* button)
+{
+    button->setStyleSheet("QPushButton {"
+                          "    background-color: #3498DB;"
+                          "    border: none;"
+                          "    color: white;"
+                          "    padding: 10px 20px;"
+                          "    font-size: 16px;"
+                          "    border-radius: 4px;"
+                          "}"
+                          "QPushButton:hover {"
+                          "    background-color: #2980B9;"
+                          "    color: white;"
+                          "    border: 1px solid #3498DB;"
+                          "}");
+
+    button->setFixedWidth(200);
 }
