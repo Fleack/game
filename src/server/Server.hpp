@@ -28,9 +28,11 @@ private:
     void handleEducationActivityRequest(json_t const&);
     void handlePreformJobRequest();
     void handleApplyJobRequest(json_t const&);
+    void handleQuitJob();
     void handleGetPlayerStats();
     void handleGetPlayerSkills();
     void handleGetJobs();
+    void handleGetPlayerJob();
     void handleTerminateSession();
 
     void sendResponse(std::string const& /* body */, beast::http::status);

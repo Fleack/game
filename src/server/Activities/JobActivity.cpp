@@ -21,10 +21,16 @@ JobActivity::JobActivity(std::string&& name, uint32_t const salaryMin, uint32_t 
 
 JobActivity::~JobActivity() = default;
 
-void JobActivity::perform(Player& player) noexcept
+perform_job_error_e JobActivity::perform(Player& player) noexcept
 {
+    using enum perform_job_error_e;
+    if (m_energyDecrease > player.getEnergy()) { return ENERGY; }
+    if (m_happienesDecrease > player.getHappiness()) { return HAPPINESS; }
+    if (m_healthDecrease > player.getHealth()) { return HEALTH; }
+
     player.decreaseEnergy(m_energyDecrease);
     player.decreaseHappiness(m_happienesDecrease);
     player.decreaseHealth(m_healthDecrease);
     player.increaseMoney(m_salary);
+    return OK;
 }

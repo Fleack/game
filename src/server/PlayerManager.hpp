@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Player.hpp"
+
 #include <string>
 
 class EntertainmentActivity;
 class IActivity;
-class Player;
 
 class PlayerManager
 {
@@ -19,8 +20,8 @@ public:
     void passYear() const noexcept;
     void performEntertainmentActivity(EntertainmentActivity&) const noexcept;
     [[nodiscard]] bool performEducationCourse(std::string const& courseName) const noexcept;
-    [[nodiscard]] bool performJob() const noexcept;
+    [[nodiscard]] perform_job_error_e performJob() const noexcept;
 
 private:
-    Player* m_player;
+    Player* m_player{nullptr};
 };

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <string>
 #include <cstdint>
+#include <string>
 
+enum class perform_job_error_e;
 class Player;
 
 class JobActivity
@@ -11,7 +12,7 @@ public:
     JobActivity(std::string&& name, uint32_t salaryMin, uint32_t salaryMax, uint8_t energyDecrease, uint8_t healthDecrease, uint8_t happienesDecrease);
     ~JobActivity();
 
-    void perform(Player& player) noexcept;
+    perform_job_error_e perform(Player& player) noexcept;
     std::string name() noexcept { return m_name; }
 
     std::string const& getName() const noexcept { return m_name; }

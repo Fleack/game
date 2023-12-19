@@ -1,6 +1,6 @@
-// jobspage.h
-#ifndef JOBSPAGE_H
-#define JOBSPAGE_H
+// jobs_page.hpp
+#ifndef JOBS_PAGE_HPP
+#define JOBS_PAGE_HPP
 
 #include <QNetworkAccessManager>
 #include <QWidget>
@@ -15,16 +15,21 @@ public:
 signals:
     void backToPlayerPageClicked();
 
-public slots:
+private slots:
     void onBackClicked();
     void onApplyJobClicked(int jobId);
+    void onQuitJobClicked();
 
 private:
     void fetchJobs();
-    void processJobs(const QJsonDocument& jsonDocument);
+    void processJobs(QJsonDocument const& jsonDocument);
+    void fetchPlayerJob();
+    void processPlayerJob(QJsonDocument const& jsonDocument);
+    void hideQuitJobButton(bool);
+    void showVacanciesTable();
+    void onWorkClicked();
 
-private:
     QNetworkAccessManager* networkManager;
 };
 
-#endif // JOBSPAGE_H
+#endif // JOBS_PAGE_HPP

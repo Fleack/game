@@ -70,6 +70,10 @@ void Server::handleRequest()
         {
             handleApplyJobRequest(jsonRequest);
         }
+        else if (command == "quit_job")
+        {
+            handleQuitJob();
+        }
         else if (command == "get_player_stats")
         {
             handleGetPlayerStats();
@@ -81,6 +85,10 @@ void Server::handleRequest()
         else if (command == "get_jobs")
         {
             handleGetJobs();
+        }
+        else if (command == "get_player_job")
+        {
+            handleGetPlayerJob();
         }
         else if (command == "terminate_session")
         {
@@ -169,6 +177,54 @@ void Server::handlePassYearRequest(json_t const&)
     }
 }
 
+void Server::handleQuitJob()
+{
+    if (m_playerManager.getPlayer()->removeJob())
+    {
+        sendResponse(R"({"message": "Job successfully removed"})", beast::http::status::ok);
+    }
+    else
+    {
+        sendResponse(R"({"error": "No job to quit"})", beast::http::status::not_modified);
+    }
+}
+
+void Server::handleGetPlayerJob()
+{
+    try
+    {
+        if (auto const player = m_playerManager.getPlayer())
+        {
+            json_t jsonResponse;
+            if (auto const job = player->getJob())
+            {
+                json_t jobInfo;
+                jobInfo["id"] = job->getID();
+                jobInfo["name"] = job->getName();
+                jobInfo["salary"] = job->getSalary();
+                jobInfo["energy_decrease"] = job->getEnergy();
+                jobInfo["health_decrease"] = job->getHealth();
+                jobInfo["happiness_decrease"] = job->getHappienes();
+                jsonResponse["job"] = jobInfo;
+            }
+
+            sendResponse(jsonResponse.dump(), beast::http::status::ok);
+        }
+        else
+        {
+            std::cout << "Player not found" << std::endl;
+
+            sendResponse(R"({"error": "Player not found."})", beast::http::status::not_found);
+        }
+    }
+    catch (std::exception const& e)
+    {
+        std::cout << "Error handling get player stats request: " << e.what() << std::endl;
+
+        sendResponse(R"({"error": "Internal Server Error"})", beast::http::status::internal_server_error);
+    }
+}
+
 void Server::handleEntertainmentActivityRequest(json_t const&)
 {
     using namespace beast::http;
@@ -222,16 +278,29 @@ void Server::handleEducationActivityRequest(json_t const& jsonRequest)
 void Server::handlePreformJobRequest()
 {
     using namespace beast::http;
-
+    using enum perform_job_error_e;
     try
     {
-        if (m_playerManager.performJob())
+        perform_job_error_e error = m_playerManager.performJob();
+        if (error == OK)
         {
             sendResponse(R"({"message": "Job performed successfully"})", status::ok);
         }
+        else if (error == ENERGY)
+        {
+            sendResponse(R"({"error": "Not enough energy"})", status::bad_request);
+        }
+        else if (error == HEALTH)
+        {
+            sendResponse(R"({"error": "Not enough health"})", status::bad_request);
+        }
+        else if (error == HAPPINESS)
+        {
+            sendResponse(R"({"error": "Not enough happiness"})", status::bad_request);
+        }
         else
         {
-            sendResponse(R"({"error": "Bad Request: Player has not been created"})", status::bad_request);
+            sendResponse(R"({"error": "Unknown error"})", status::bad_request);
         }
     }
     catch (std::exception const& e)
@@ -288,7 +357,7 @@ void Server::handleGetPlayerSkills()
 
             auto const stats = player->getSkills();
 
-            for (const auto& [skill, value] : stats)
+            for (auto const& [skill, value] : stats)
             {
                 json_t skillInfo;
                 skillInfo["name"] = magic_enum::enum_name(skill);

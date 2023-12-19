@@ -124,13 +124,18 @@ void Player::setJob(std::unique_ptr<JobActivity>&& job) noexcept
     m_job = std::move(job);
 }
 
-void Player::removeJob() noexcept
+bool Player::removeJob() noexcept
 {
-    if (!m_job)
+    if (m_job) [[likely]]
     {
-        std::cout << "Player already has no job";
+        m_job = nullptr;
+        return true;
     }
-    m_job = nullptr;
+    else [[unlikely]]
+    {
+        std::cout << "Player has no job";
+        return false;
+    }
 }
 
 std::unordered_map<skills_e, uint8_t> const& Player::getSkills() const noexcept
@@ -173,10 +178,11 @@ JobActivity const* Player::getJob() const noexcept
     return m_job.get();
 }
 
-void Player::performJob() noexcept
+perform_job_error_e Player::performJob() noexcept
 {
     if (m_job)
     {
-        m_job->perform(*this);
+        return m_job->perform(*this);
     }
+    return perform_job_error_e::UNSPECIFIED;
 }

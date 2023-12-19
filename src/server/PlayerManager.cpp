@@ -16,6 +16,7 @@ bool PlayerManager::createPlayer(std::string const& name) noexcept
 {
     try
     {
+        delete m_player;
         m_player = new Player{name};
         std::cout << "Created player: " << name << std::endl;
         return true;
@@ -51,12 +52,12 @@ bool PlayerManager::performEducationCourse(std::string const&) const noexcept
     return true;
 }
 
-bool PlayerManager::performJob() const noexcept
+perform_job_error_e PlayerManager::performJob() const noexcept
 {
     if (!m_player)
     {
-        return false;
+        return perform_job_error_e::UNSPECIFIED;
     }
-    m_player->performJob();
-    return true;
+
+    return m_player->performJob();;
 }

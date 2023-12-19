@@ -15,6 +15,15 @@ enum class skills_e
     PROGRAMMING,
 };
 
+enum class perform_job_error_e
+{
+    OK,
+    ENERGY,
+    HEALTH,
+    HAPPINESS,
+    UNSPECIFIED,
+};
+
 class Player
 {
 public:
@@ -38,7 +47,7 @@ public:
     void decreaseSkill(skills_e, uint8_t);
 
     void setJob(std::unique_ptr<JobActivity>&&) noexcept;
-    void removeJob() noexcept;
+    bool removeJob() noexcept;
 
     std::unordered_map<skills_e, uint8_t> const& getSkills() const noexcept;
     std::string const& getName() const noexcept;
@@ -49,7 +58,7 @@ public:
     uint32_t getMoney() const noexcept;
     JobActivity const* getJob() const noexcept;
 
-    void performJob() noexcept;
+    perform_job_error_e performJob() noexcept;
 
 private:
     std::string m_name;
