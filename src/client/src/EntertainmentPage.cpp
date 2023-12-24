@@ -1,4 +1,4 @@
-#include "EducationPage.hpp"
+#include "EntertainmentPage.hpp"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -7,52 +7,51 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-EducationPage::EducationPage(QWidget* parent)
+EntertainmentPage::EntertainmentPage(QWidget* parent)
     : QWidget(parent)
     , m_networkManager(new QNetworkAccessManager(this))
-{
-    createLayout();
-}
-
-void EducationPage::createLayout()
 {
     auto* layout = new QVBoxLayout(this);
 
     setAttribute(Qt::WA_StyledBackground, true);
-    setStyleSheet("EducationPage {"
+    setStyleSheet("EntertainmentPage {"
                   "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #34495E);"
                   "}");
 
     auto* descriptionLabel = new QLabel("Больше активностей будет добавлено в будущем...\n\n"
                                         "Характеристики:\n"
-                                        "Энергия: -10\n"
-                                        "Счастье: -10\n"
-                                        "Деньги: -10000\n"
-                                        "Навыки: +10 ко всем", this);
-
+                                        "Энергия: -5\n"
+                                        "Здоровье: +5\n"
+                                        "Счастье: +15\n"
+                                        "Деньги: -500",
+        this);
     applyDescriptionLabelStyle(descriptionLabel);
 
-    auto* buyAndLearnButton = new QPushButton("Купить и изучить", this);
+    auto* entertainButton = new QPushButton("Пойти развлечься", this);
     auto* backButton = new QPushButton("Назад", this);
 
-    applyButtonStyle(buyAndLearnButton);
+    entertainButton->setObjectName("entertainButton");
+    backButton->setObjectName("backButton");
+    descriptionLabel->setObjectName("descriptionLabel");
+
+    applyButtonStyle(entertainButton);
     applyButtonStyle(backButton);
 
     layout->addWidget(descriptionLabel, 0, Qt::AlignHCenter);
-    layout->addWidget(buyAndLearnButton, 0, Qt::AlignHCenter);
+    layout->addWidget(entertainButton, 0, Qt::AlignHCenter);
     layout->addWidget(backButton, 0, Qt::AlignHCenter);
 
-    connect(buyAndLearnButton, &QPushButton::clicked, this, &EducationPage::onBuyAndLearnClicked);
-    connect(backButton, &QPushButton::clicked, this, &EducationPage::onBackClicked);
+    connect(entertainButton, &QPushButton::clicked, this, &EntertainmentPage::onEntertainClicked);
+    connect(backButton, &QPushButton::clicked, this, &EntertainmentPage::onBackClicked);
 }
 
-void EducationPage::onBuyAndLearnClicked()
+void EntertainmentPage::onEntertainClicked()
 {
     QNetworkRequest request(QUrl("http://localhost:12345"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QJsonObject requestBody;
-    requestBody["command"] = "perform_education_activity";
+    requestBody["command"] = "perform_entertainment_activity";
 
     QJsonDocument const requestData(requestBody);
     QByteArray const requestDataBytes = requestData.toJson();
@@ -64,12 +63,12 @@ void EducationPage::onBuyAndLearnClicked()
     });
 }
 
-void EducationPage::onBackClicked()
+void EntertainmentPage::onBackClicked()
 {
     emit backToPlayerPageClicked();
 }
 
-void EducationPage::applyButtonStyle(QPushButton* button)
+void EntertainmentPage::applyButtonStyle(QPushButton* button)
 {
     button->setStyleSheet("QPushButton {"
                           "    background-color: #3498DB;"
@@ -88,7 +87,7 @@ void EducationPage::applyButtonStyle(QPushButton* button)
     button->setFixedWidth(200);
 }
 
-void EducationPage::applyDescriptionLabelStyle(QLabel* label)
+void EntertainmentPage::applyDescriptionLabelStyle(QLabel* label)
 {
     label->setStyleSheet("QLabel {"
                          "    color: white;"

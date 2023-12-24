@@ -1,39 +1,24 @@
-#include "Server.hpp"
+#include "Session.hpp"
 
 #include "Activities/EntertainmentActivity.hpp"
-#include "Player.hpp"
+#include "Server.hpp"
 
 #include <iostream>
 
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
 #include <magic_enum/magic_enum.hpp>
-#include <nlohmann/json.hpp>
 
-Server::Server(asio::io_context& ioContext, uint16_t port)
-    : m_acceptor{ioContext, {tcp_t::v4(), port}}
-    , m_socket{ioContext}
+Session::Session(asio::ip::tcp::socket socket, PlayerManager& playerManager, WorldManager& worldManager, Server& server)
+    : m_socket{std::move(socket)}
+    , m_server{server}
+    , m_playerManager{playerManager}
+    , m_worldManager{worldManager}
+{}
+
+void Session::handleRequest()
 {
-}
-
-void Server::start()
-{
-    m_acceptor.async_accept(m_socket, [this](std::error_code const& ec) {
-        if (!ec)
-        {
-            handleRequest();
-        }
-        else
-        {
-            std::cout << "Error accepting connection: " << ec.message() << std::endl;
-        }
-
-        m_socket.close();
-        start();
-    });
-}
-
-void Server::handleRequest()
-{
-    using namespace beast::http;
+    using namespace boost::beast::http;
 
     try
     {
@@ -46,7 +31,7 @@ void Server::handleRequest()
         std::cout << "Recieved request: " << jsonRequest << std::endl;
         std::cout << "---------------------------------------------------------\n\n";
 
-        auto command = jsonRequest["command"].get<std::string>();
+        auto const command = jsonRequest["command"].get<std::string>();
         if (command == "create_player")
         {
             handleCreatePlayerRequest(jsonRequest);
@@ -95,6 +80,11 @@ void Server::handleRequest()
         {
             handleTerminateSession();
         }
+        else if (command == "timer")
+        {
+            m_server.resetTimer();
+            sendResponse(R"({"message": "Timer reseted successfully"})", status::ok);
+        }
         else
         {
             std::cout << "Unknown command: " << command << std::endl;
@@ -116,7 +106,7 @@ void Server::handleRequest()
     }
 }
 
-void Server::handleCreatePlayerRequest(json_t const& jsonRequest)
+void Session::handleCreatePlayerRequest(json_t const& jsonRequest)
 {
     using namespace beast::http;
 
@@ -146,7 +136,7 @@ void Server::handleCreatePlayerRequest(json_t const& jsonRequest)
     }
 }
 
-void Server::handlePassYearRequest(json_t const&)
+void Session::handlePassYearRequest(json_t const&)
 {
     using namespace beast::http;
 
@@ -177,7 +167,7 @@ void Server::handlePassYearRequest(json_t const&)
     }
 }
 
-void Server::handleQuitJob()
+void Session::handleQuitJob()
 {
     if (m_playerManager.getPlayer()->removeJob())
     {
@@ -189,7 +179,7 @@ void Server::handleQuitJob()
     }
 }
 
-void Server::handleGetPlayerJob()
+void Session::handleGetPlayerJob()
 {
     try
     {
@@ -225,7 +215,7 @@ void Server::handleGetPlayerJob()
     }
 }
 
-void Server::handleEntertainmentActivityRequest(json_t const&)
+void Session::handleEntertainmentActivityRequest(json_t const&)
 {
     using namespace beast::http;
 
@@ -249,7 +239,7 @@ void Server::handleEntertainmentActivityRequest(json_t const&)
     }
 }
 
-void Server::handleEducationActivityRequest(json_t const& jsonRequest)
+void Session::handleEducationActivityRequest(json_t const& jsonRequest)
 {
     using namespace beast::http;
 
@@ -280,7 +270,7 @@ void Server::handleEducationActivityRequest(json_t const& jsonRequest)
     }
 }
 
-void Server::handlePreformJobRequest()
+void Session::handlePreformJobRequest()
 {
     using namespace beast::http;
     using enum perform_job_error_e;
@@ -316,7 +306,7 @@ void Server::handlePreformJobRequest()
     }
 }
 
-void Server::handleApplyJobRequest(json_t const& jsonRequest)
+void Session::handleApplyJobRequest(json_t const& jsonRequest)
 {
     using namespace beast::http;
 
@@ -352,7 +342,7 @@ void Server::handleApplyJobRequest(json_t const& jsonRequest)
     }
 }
 
-void Server::handleGetPlayerSkills()
+void Session::handleGetPlayerSkills()
 {
     try
     {
@@ -385,7 +375,7 @@ void Server::handleGetPlayerSkills()
     }
 }
 
-void Server::handleGetPlayerStats()
+void Session::handleGetPlayerStats()
 {
     try
     {
@@ -428,7 +418,7 @@ void Server::handleGetPlayerStats()
     }
 }
 
-void Server::handleGetJobs()
+void Session::handleGetJobs()
 {
     try
     {
@@ -455,20 +445,18 @@ void Server::handleGetJobs()
     }
 }
 
-void Server::handleTerminateSession()
+void Session::handleTerminateSession()
 {
-    std::cout << "Terminating server..." << std::endl;
+    std::cout << "Terminating server: terminate request from client" << std::endl;
 
     sendResponse(R"({"message": "Server terminating"})", beast::http::status::ok);
 
-    m_acceptor.cancel();
-    m_acceptor.close();
-    m_socket.close();
+    std::cout << "Terminate server: request from client" << std::endl;
 
-    m_terminate = true;
+    m_server.terminateServer();
 }
 
-void Server::sendResponse(std::string const& body, beast::http::status status)
+void Session::sendResponse(std::string const& body, beast::http::status status)
 {
     using namespace beast::http;
 

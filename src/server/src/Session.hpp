@@ -1,27 +1,25 @@
 #pragma once
-
 #include "PlayerManager.hpp"
 #include "WorldManager.hpp"
 
-#include <boost/asio.hpp>
-#include <boost/beast.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/beast/http/status.hpp>
 #include <nlohmann/json.hpp>
 
+class Server;
 namespace asio = boost::asio;
 namespace beast = boost::beast;
 using tcp_t = asio::ip::tcp;
 using json_t = nlohmann::json;
 
-class Server
+class Session
 {
 public:
-    Server(asio::io_context&, uint16_t port);
+    explicit Session(asio::ip::tcp::socket, PlayerManager&, WorldManager&, Server&);
 
-    void start();
-
-private:
     void handleRequest();
 
+private:
     void handleCreatePlayerRequest(json_t const&);
     void handlePassYearRequest(json_t const&);
     void handleEntertainmentActivityRequest(json_t const&);
@@ -41,10 +39,9 @@ private:
     static constexpr uint8_t MAX_RANDOM_JOBS = 4;
     static constexpr uint8_t HTTP_VERSION = 11;
 
-    bool m_terminate{false};
-
-    asio::ip::tcp::acceptor m_acceptor;
     asio::ip::tcp::socket m_socket;
-    PlayerManager m_playerManager{};
-    WorldManager m_worldManager{};
+    Server& m_server;
+
+    PlayerManager& m_playerManager;
+    WorldManager& m_worldManager;
 };

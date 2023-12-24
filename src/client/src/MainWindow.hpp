@@ -15,7 +15,7 @@ public:
 protected:
     void closeEvent(QCloseEvent* event) override;
 
-private slots:
+public slots:
     void onNewGameClicked();
     void onExitClicked();
     void onBackToMainMenuClicked();
@@ -24,5 +24,9 @@ private slots:
     void onJobsClicked();
     void onEntertainmentClicked();
     void onEducationClicked();
+    void onTimerTimeout();
     static void terminateServer();
+
+private:
+    QTimer* timer;
 };

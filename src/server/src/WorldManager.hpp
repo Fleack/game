@@ -12,8 +12,8 @@ public:
     WorldManager();
 
     std::vector<job_t> const& getAllJobs() const noexcept;
-    JobActivity const* getJob(uint8_t /* jobId */) const noexcept;
-    std::unique_ptr<JobActivity> moveJob(uint8_t /* jobId */);
+    JobActivity const* getJob(uint32_t /* jobId */) const noexcept;
+    std::unique_ptr<JobActivity> moveJob(uint32_t /* jobId */);
 
     void addNewRandomJob();
     void removeRandomJob();

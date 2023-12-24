@@ -105,6 +105,13 @@ void PlayerPage::createButtons(QVBoxLayout* layout)
     auto* backButton = new QPushButton("Назад", this);
     auto* nextYearButton = new QPushButton("Следующий год", this);
 
+    jobsButton->setObjectName("Работа");
+    skillsButton->setObjectName("Умения");
+    entertainmentButton->setObjectName("Развлечения");
+    educationButton->setObjectName("Обучение");
+    backButton->setObjectName("Назад");
+    nextYearButton->setObjectName("Следующий год");
+
     applyButtonStyle(nextYearButton);
     applyButtonStyle(jobsButton);
     applyButtonStyle(skillsButton);
@@ -204,7 +211,7 @@ void PlayerPage::applyButtonStyle(QPushButton* button)
     button->setFixedWidth(200);
 }
 
-void PlayerPage::updateLabelWithColor(QLabel* label, const QString& text, const QColor& color)
+void PlayerPage::updateLabelWithColor(QLabel* label, QString const& text, QColor const& color)
 {
     label->setText(text);
     label->setStyleSheet(QString("QLabel { font-size: 20px; color: %1; margin-bottom: 10px; qproperty-alignment: AlignTop; }").arg(color.name()));

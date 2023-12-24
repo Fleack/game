@@ -10,6 +10,9 @@ MainMenuPage::MainMenuPage(QWidget* parent)
     auto* newGameButton = new QPushButton("Новая игра", this);
     auto* exitButton = new QPushButton("Выход", this);
 
+    newGameButton->setObjectName("Новая игра");
+    exitButton->setObjectName("Выход");
+
     setAttribute(Qt::WA_StyledBackground, true);
     setStyleSheet("MainMenuPage {"
                   "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #34495E);"
