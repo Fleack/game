@@ -35,7 +35,7 @@ std::vector<WorldManager::job_t> const& WorldManager::getAllJobs() const noexcep
     return m_jobs;
 }
 
-JobActivity const* WorldManager::getJob(uint8_t jobId) const noexcept
+JobActivity const* WorldManager::getJob(uint32_t jobId) const noexcept
 {
     auto const it =
         std::ranges::find_if(m_jobs, [jobId](auto const& vacancy) { return vacancy->getID() == jobId; });
@@ -48,7 +48,7 @@ JobActivity const* WorldManager::getJob(uint8_t jobId) const noexcept
     return nullptr;
 }
 
-std::unique_ptr<JobActivity> WorldManager::moveJob(uint8_t jobId)
+std::unique_ptr<JobActivity> WorldManager::moveJob(uint32_t jobId)
 {
     auto const it = std::ranges::find_if(m_jobs, [jobId](auto const& vacancy) {
         return vacancy->getID() == jobId;
@@ -93,7 +93,7 @@ std::unique_ptr<JobActivity> WorldManager::generateRandomJob()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<size_t> dist1(10, 20);
+    std::uniform_int_distribution<size_t> dist1(10, 20); //-V525
     std::uniform_int_distribution<size_t> dist2(5, 10);
     std::uniform_int_distribution<size_t> dist3(0, COMPANY_NAMES.size() - 1);
     std::uniform_int_distribution<size_t> dist4(0, PROFESSIONS.size() - 1);

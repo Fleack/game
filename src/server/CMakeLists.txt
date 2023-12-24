@@ -1,5 +1,5 @@
 add_subdirectory(Activities)
-add_executable(server
+add_library(server
         main.cpp
         Session.cpp
         Server.cpp
