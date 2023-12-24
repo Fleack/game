@@ -11,6 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow{parent}
@@ -24,9 +25,9 @@ MainWindow::MainWindow(QWidget* parent)
 
     setFixedSize(800, 890);
 
-    // timer = new QTimer(this);
-    // connect(timer, &QTimer::timeout, this, &MainWindow::onTimerTimeout);
-    // timer->start(30000);
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::onTimerTimeout);
+    timer->start(30000);
 }
 
 void MainWindow::onNewGameClicked()
@@ -117,6 +118,36 @@ void MainWindow::closeEvent(QCloseEvent* event)
     }
 }
 
+void MainWindow::onTimerTimeout()
+{
+    QNetworkAccessManager networkManager;
+    QJsonObject jsonObject;
+    jsonObject["command"] = "timer";
+
+    QNetworkRequest request(QUrl("http://localhost:12345"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply* reply = networkManager.post(request, QJsonDocument(jsonObject).toJson());
+
+    qDebug() << "Timer request sent";
+
+    QEventLoop loop;
+    connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    loop.exec();
+
+    if (reply->error() == QNetworkReply::NoError)
+    {
+        QByteArray responseData = reply->readAll();
+        qDebug() << "Timer request finished successfully. Response: " << responseData;
+    }
+    else
+    {
+        qDebug() << "Timer request failed. Error: " << reply->errorString();
+    }
+
+    reply->deleteLater();
+}
+
 void MainWindow::terminateServer()
 {
     QNetworkAccessManager networkManager;
@@ -128,13 +159,9 @@ void MainWindow::terminateServer()
 
     QNetworkReply* reply = networkManager.post(request, QJsonDocument(jsonObject).toJson());
 
-    qDebug() << "Terminate session request sent";
-
     QEventLoop loop;
     connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
     loop.exec();
-
-    qDebug() << "Terminate session response received";
 
     reply->deleteLater();
 }

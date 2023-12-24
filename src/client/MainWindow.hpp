@@ -24,5 +24,9 @@ private slots:
     void onJobsClicked();
     void onEntertainmentClicked();
     void onEducationClicked();
+    void onTimerTimeout();
     static void terminateServer();
+
+private:
+    QTimer* timer;
 };

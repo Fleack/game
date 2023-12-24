@@ -19,10 +19,9 @@ public:
     void resetTimer();
 
 private:
-
     void startTimer();
 
-    static constexpr uint8_t TIMER_DURATION_SECONDS{10};
+    static constexpr std::chrono::seconds TIMER_DURATION_SECONDS{180};
 
     asio::io_context m_ioContext;
     asio::ip::tcp::acceptor m_acceptor;

@@ -82,6 +82,7 @@ void Session::handleRequest()
         else if (command == "timer")
         {
             m_server.resetTimer();
+            sendResponse(R"({"message": "Timer reseted successfully"})", status::ok);
         }
         else
         {
@@ -448,6 +449,8 @@ void Session::handleTerminateSession()
     std::cout << "Terminating server: terminate request from client" << std::endl;
 
     sendResponse(R"({"message": "Server terminating"})", beast::http::status::ok);
+
+    std::cout << "Terminate server: request from client" << std::endl;
 
     m_server.terminateServer();
 }

@@ -43,14 +43,19 @@ void Server::start()
 
 void Server::resetTimer()
 {
+    std::cout << "Reseting timer" << std::endl;
     m_timer.cancel();
     startTimer();
 }
 
 void Server::startTimer()
 {
-    m_timer.async_wait([this](const boost::system::error_code&) {
-        terminateServer();
+    m_timer.async_wait([this](const boost::system::error_code& err) {
+        if (!err)
+        {
+            std::cout << "Terminate server: timer expired" << std::endl;
+            terminateServer();
+        }
     });
 }
 
