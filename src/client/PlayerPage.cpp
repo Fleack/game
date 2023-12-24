@@ -63,37 +63,37 @@ void PlayerPage::createPlayerStats(QVBoxLayout* layout)
 
     QNetworkReply* reply = m_networkManager->post(request, QJsonDocument(jsonObject).toJson());
 
-    connect(reply, &QNetworkReply::finished, [this, reply, nameLabel, healthLabel, energyLabel, happinessLabel, ageLabel, moneyLabel, jobLabel]() {
-        if (reply->error() == QNetworkReply::NoError)
-        {
-            QByteArray const responseData = reply->readAll();
-            QJsonDocument const jsonResponse = QJsonDocument::fromJson(responseData);
-
-            if (jsonResponse.isObject())
+        connect(reply, &QNetworkReply::finished, [this, reply, nameLabel, healthLabel, energyLabel, happinessLabel, ageLabel, moneyLabel, jobLabel]() {
+            if (reply->error() == QNetworkReply::NoError)
             {
-                QJsonObject playerStats = jsonResponse.object();
+                QByteArray const responseData = reply->readAll();
+                QJsonDocument const jsonResponse = QJsonDocument::fromJson(responseData);
 
-                updateLabelWithColor(nameLabel, "<b>Имя:</b> " + playerStats["name"].toString(), Qt::white);
-                updateLabelWithColor(healthLabel, "<b>Здоровье:</b> " + QString::number(playerStats["health"].toDouble()), getColorForValue(playerStats["health"].toDouble()));
-                updateLabelWithColor(energyLabel, "<b>Энергия:</b> " + QString::number(playerStats["energy"].toDouble()), getColorForValue(playerStats["energy"].toDouble()));
-                updateLabelWithColor(happinessLabel, "<b>Счастье:</b> " + QString::number(playerStats["happiness"].toDouble()), getColorForValue(playerStats["happiness"].toDouble()));
-                updateLabelWithColor(ageLabel, "<b>Возраст:</b> " + QString::number(playerStats["age"].toInt()), Qt::white);
-                updateLabelWithColor(moneyLabel, "<b>Деньги:</b> " + QString::number(playerStats["money"].toInt()), Qt::white);
+                if (jsonResponse.isObject())
+                {
+                    QJsonObject playerStats = jsonResponse.object();
 
-                if (playerStats.contains("job") && playerStats["job"].isObject())
-                {
-                    QJsonObject jobInfo = playerStats["job"].toObject();
-                    updateLabelWithColor(jobLabel, "<b>Работа:</b> " + jobInfo["name"].toString(), Qt::white);
-                }
-                else
-                {
-                    updateLabelWithColor(jobLabel, "<b>Работа:</b> Нет", Qt::white);
+                    updateLabelWithColor(nameLabel, "<b>Имя:</b> " + playerStats["name"].toString(), Qt::white);
+                    updateLabelWithColor(healthLabel, "<b>Здоровье:</b> " + QString::number(playerStats["health"].toDouble()), getColorForValue(playerStats["health"].toDouble()));
+                    updateLabelWithColor(energyLabel, "<b>Энергия:</b> " + QString::number(playerStats["energy"].toDouble()), getColorForValue(playerStats["energy"].toDouble()));
+                    updateLabelWithColor(happinessLabel, "<b>Счастье:</b> " + QString::number(playerStats["happiness"].toDouble()), getColorForValue(playerStats["happiness"].toDouble()));
+                    updateLabelWithColor(ageLabel, "<b>Возраст:</b> " + QString::number(playerStats["age"].toInt()), Qt::white);
+                    updateLabelWithColor(moneyLabel, "<b>Деньги:</b> " + QString::number(playerStats["money"].toInt()), Qt::white);
+
+                    if (playerStats.contains("job") && playerStats["job"].isObject())
+                    {
+                        QJsonObject jobInfo = playerStats["job"].toObject();
+                        updateLabelWithColor(jobLabel, "<b>Работа:</b> " + jobInfo["name"].toString(), Qt::white);
+                    }
+                    else
+                    {
+                        updateLabelWithColor(jobLabel, "<b>Работа:</b> Нет", Qt::white);
+                    }
                 }
             }
-        }
 
-        reply->deleteLater();
-    });
+            reply->deleteLater();
+        });
 }
 
 void PlayerPage::createButtons(QVBoxLayout* layout)
@@ -204,7 +204,7 @@ void PlayerPage::applyButtonStyle(QPushButton* button)
     button->setFixedWidth(200);
 }
 
-void PlayerPage::updateLabelWithColor(QLabel* label, const QString& text, const QColor& color)
+void PlayerPage::updateLabelWithColor(QLabel* label, QString const& text, QColor const& color)
 {
     label->setText(text);
     label->setStyleSheet(QString("QLabel { font-size: 20px; color: %1; margin-bottom: 10px; qproperty-alignment: AlignTop; }").arg(color.name()));

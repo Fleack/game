@@ -9,6 +9,7 @@
 
 EntertainmentPage::EntertainmentPage(QWidget* parent)
     : QWidget(parent)
+    , m_networkManager(new QNetworkAccessManager(this))
 {
     auto* layout = new QVBoxLayout(this);
 
@@ -22,7 +23,8 @@ EntertainmentPage::EntertainmentPage(QWidget* parent)
                                         "Энергия: -5\n"
                                         "Здоровье: +5\n"
                                         "Счастье: +15\n"
-                                        "Деньги: -500", this);
+                                        "Деньги: -500",
+        this);
     applyDescriptionLabelStyle(descriptionLabel);
 
     auto* entertainButton = new QPushButton("Пойти развлечься", this);

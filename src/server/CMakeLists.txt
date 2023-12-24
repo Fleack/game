@@ -1,5 +1,7 @@
 add_subdirectory(Activities)
-add_library(server
+add_executable(server
+        main.cpp
+        Session.cpp
         Server.cpp
         Player.cpp
         PlayerManager.cpp

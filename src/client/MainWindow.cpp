@@ -7,6 +7,7 @@
 #include "PlayerSkillsPage.hpp"
 
 #include <QCloseEvent>
+#include <qeventloop.h>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
@@ -22,6 +23,10 @@ MainWindow::MainWindow(QWidget* parent)
     setCentralWidget(mainMenuPage);
 
     setFixedSize(800, 890);
+
+    // timer = new QTimer(this);
+    // connect(timer, &QTimer::timeout, this, &MainWindow::onTimerTimeout);
+    // timer->start(30000);
 }
 
 void MainWindow::onNewGameClicked()
@@ -123,10 +128,13 @@ void MainWindow::terminateServer()
 
     QNetworkReply* reply = networkManager.post(request, QJsonDocument(jsonObject).toJson());
 
-    qDebug() << "Terminate session request sent:\n"
-             << jsonObject << '\n';
+    qDebug() << "Terminate session request sent";
 
-    connect(reply, &QNetworkReply::finished, [reply]() {
-        reply->deleteLater();
-    });
+    QEventLoop loop;
+    connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    loop.exec();
+
+    qDebug() << "Terminate session response received";
+
+    reply->deleteLater();
 }
