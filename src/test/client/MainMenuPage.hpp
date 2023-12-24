@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../client/MainMenuPage.hpp"
+#include "src/MainMenuPage.hpp"
 
 #include <QVBoxLayout>
 

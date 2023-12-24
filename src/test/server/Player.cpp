@@ -1,6 +1,4 @@
-#include "Player.hpp"
-
-#include "Activities/JobActivity.hpp"
+#include "src/Player.hpp"
 
 #include <gtest/gtest.h>
 

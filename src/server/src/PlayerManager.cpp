@@ -1,11 +1,10 @@
 #include "PlayerManager.hpp"
 
 #include "Activities/EducationActivity.hpp"
+#include "Activities/EntertainmentActivity.hpp"
 #include "Player.hpp"
 
 #include <iostream>
-
-#include <Activities/EntertainmentActivity.hpp>
 
 PlayerManager::~PlayerManager() noexcept
 {
@@ -59,7 +58,8 @@ bool PlayerManager::performEducationCourse(std::string const&) const noexcept
         {skills_e::LITERATURE, 10},
         {skills_e::PROGRAMMING, 10}};
     EducationActivity const activity("course", 10, 10, 10'000, skills);
-    return activity.perform(*m_player);;
+    return activity.perform(*m_player);
+    ;
 }
 
 perform_job_error_e PlayerManager::performJob() const noexcept

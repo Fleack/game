@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../client/JobsPage.hpp"
+#include "src/JobsPage.hpp"
 
 #include <QVBoxLayout>
 

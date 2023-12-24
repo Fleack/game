@@ -16,6 +16,8 @@ add_executable(client_tests
 )
 
 target_link_libraries(client_tests PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::Test)
-target_link_libraries(client_tests PRIVATE client)
+target_link_libraries(client_tests PRIVATE client_lib)
 
 target_include_directories(client_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+include_directories(../../client)

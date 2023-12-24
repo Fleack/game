@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../client/EntertainmentPage.hpp"
+#include "src/EntertainmentPage.hpp"
 
 #include <QVBoxLayout>
 

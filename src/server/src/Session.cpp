@@ -1,9 +1,10 @@
 #include "Session.hpp"
 
-#include <iostream>
-#include <Server.hpp>
+#include "Activities/EntertainmentActivity.hpp"
+#include "Server.hpp"
 
-#include <Activities/EntertainmentActivity.hpp>
+#include <iostream>
+
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <magic_enum/magic_enum.hpp>

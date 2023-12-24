@@ -1,7 +1,6 @@
-#include "PlayerManager.hpp"
+#include "src/PlayerManager.hpp"
 
-#include "Activities/EducationActivity.hpp"
-#include "Activities/EntertainmentActivity.hpp"
+#include "src/Activities/EntertainmentActivity.hpp"
 
 #include <gtest/gtest.h>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../client/CreatePlayerPage.hpp"
+#include "src/CreatePlayerPage.hpp"
 
 #include <QtTest/QtTest>
 
@@ -14,7 +14,7 @@ private slots:
         CreatePlayerPage const createPlayerPage;
 
         QVERIFY(createPlayerPage.findChild<QLineEdit*>() != nullptr);
-        QVERIFY(createPlayerPage.findChild<QPushButton*>("Создатьg") != nullptr);
+        QVERIFY(createPlayerPage.findChild<QPushButton*>("Создать") != nullptr);
         QVERIFY(createPlayerPage.findChild<QPushButton*>("Назад") != nullptr);
     }
 

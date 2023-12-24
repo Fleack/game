@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include <Activities/EducationActivity.hpp>
+#include "Activities/EducationActivity.hpp"
 
 class EntertainmentActivity;
 class IActivity;

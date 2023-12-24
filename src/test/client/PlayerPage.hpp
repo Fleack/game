@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../client/PlayerPage.hpp"
+#include "src/PlayerPage.hpp"
 
 #include <QtTest/QtTest>
 

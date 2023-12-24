@@ -6,6 +6,8 @@ add_executable(server_tests
 )
 
 target_link_libraries(server_tests PRIVATE gtest gtest_main)
-target_link_libraries(server_tests PRIVATE server activities)
+target_link_libraries(server_tests PRIVATE server_lib)
 
 target_include_directories(server_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+include_directories(../../server)
