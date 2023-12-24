@@ -13,6 +13,7 @@ class JobsPage final : public QWidget
 public:
     explicit JobsPage(QWidget* parent = nullptr);
 
+    void processJobs(QJsonDocument const& jsonDocument);
 signals:
     void backToPlayerPageClicked();
 
@@ -23,7 +24,6 @@ private slots:
 
 private:
     void fetchJobs();
-    void processJobs(QJsonDocument const& jsonDocument);
     void fetchPlayerJob();
     void processPlayerJob(QJsonDocument const& jsonDocument);
     void hideQuitJobButton(bool) const;

@@ -5,7 +5,7 @@ include_directories(${Qt6Core_INCLUDE_DIRS} ${Qt6Gui_INCLUDE_DIRS} ${Qt6Widgets_
 
 set(CMAKE_AUTOMOC ON)
 
-add_executable(client
+add_library(client
         main.cpp
         EducationPage.cpp
         EntertainmentPage.cpp

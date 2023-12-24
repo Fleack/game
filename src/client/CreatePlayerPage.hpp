@@ -16,7 +16,7 @@ signals:
     void backClicked();
     void createPlayerClicked();
 
-private slots:
+public slots:
     void onCreateClicked();
 
 private:

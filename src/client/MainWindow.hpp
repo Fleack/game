@@ -15,7 +15,7 @@ public:
 protected:
     void closeEvent(QCloseEvent* event) override;
 
-private slots:
+public slots:
     void onNewGameClicked();
     void onExitClicked();
     void onBackToMainMenuClicked();

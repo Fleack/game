@@ -30,6 +30,10 @@ EntertainmentPage::EntertainmentPage(QWidget* parent)
     auto* entertainButton = new QPushButton("Пойти развлечься", this);
     auto* backButton = new QPushButton("Назад", this);
 
+    entertainButton->setObjectName("entertainButton");
+    backButton->setObjectName("backButton");
+    descriptionLabel->setObjectName("descriptionLabel");
+
     applyButtonStyle(entertainButton);
     applyButtonStyle(backButton);
 

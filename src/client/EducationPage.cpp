@@ -30,10 +30,15 @@ void EducationPage::createLayout()
                                         "Деньги: -10000\n"
                                         "Навыки: +10 ко всем", this);
 
+    descriptionLabel->setObjectName("descriptionLabel");
+
     applyDescriptionLabelStyle(descriptionLabel);
 
     auto* buyAndLearnButton = new QPushButton("Купить и изучить", this);
     auto* backButton = new QPushButton("Назад", this);
+
+    buyAndLearnButton->setObjectName("buyAndLearnButton");
+    backButton->setObjectName("backButton");
 
     applyButtonStyle(buyAndLearnButton);
     applyButtonStyle(backButton);

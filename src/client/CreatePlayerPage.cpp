@@ -17,6 +17,9 @@ CreatePlayerPage::CreatePlayerPage(QWidget* parent)
     auto* createButton = new QPushButton("Создать", this);
     auto* backButton = new QPushButton("Назад", this);
 
+    createButton->setObjectName("Создать");
+    backButton->setObjectName("Назад");
+
     setAttribute(Qt::WA_StyledBackground, true);
     setStyleSheet("CreatePlayerPage {"
                   "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #34495E);"

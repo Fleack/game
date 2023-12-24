@@ -15,13 +15,16 @@ PlayerSkillsPage::PlayerSkillsPage(QWidget* parent)
     , m_networkManager(new QNetworkAccessManager(this))
 {
     auto* layout = new QVBoxLayout(this);
+    auto* skillsTable = new QTableWidget(this);
+    auto* backButton = new QPushButton("Назад", this);
+
+    backButton->setObjectName("backButton");
+    skillsTable->setObjectName("skillsTable");
 
     setAttribute(Qt::WA_StyledBackground, true);
     setStyleSheet("PlayerSkillsPage {"
                   "    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #34495E);"
                   "}");
-
-    auto* skillsTable = new QTableWidget(this);
 
     skillsTable->setObjectName("skillsTable");
     skillsTable->setColumnCount(2);
@@ -29,7 +32,6 @@ PlayerSkillsPage::PlayerSkillsPage(QWidget* parent)
     skillsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     layout->addWidget(skillsTable);
 
-    auto* backButton = new QPushButton("Назад", this);
     applyButtonStyle(backButton);
     layout->addWidget(backButton);
 
