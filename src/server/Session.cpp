@@ -81,7 +81,7 @@ void Session::handleRequest()
         }
         else if (command == "timer")
         {
-            //m_server.restartTimer();
+            m_server.resetTimer();
         }
         else
         {

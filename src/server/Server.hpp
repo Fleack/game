@@ -14,14 +14,20 @@ public:
 
     void start();
     void startCtx();
-    void terminateServer();
+    static void terminateServer();
+
+    void resetTimer();
 
 private:
-    static constexpr uint8_t TIMER_DURATION_SECONDS{180};
+
+    void startTimer();
+
+    static constexpr uint8_t TIMER_DURATION_SECONDS{10};
 
     asio::io_context m_ioContext;
     asio::ip::tcp::acceptor m_acceptor;
     asio::ip::tcp::socket m_socket;
+    asio::steady_timer m_timer;
 
     PlayerManager m_playerManager;
     WorldManager m_worldManager;

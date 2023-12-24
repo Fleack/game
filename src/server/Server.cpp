@@ -7,7 +7,9 @@
 Server::Server(uint16_t port)
     : m_acceptor{m_ioContext, {tcp_t::v4(), port}}
     , m_socket{m_ioContext}
+    , m_timer{m_ioContext, std::chrono::seconds(TIMER_DURATION_SECONDS)}
 {
+    startTimer();
 }
 
 // Переделать под сессию с мувом сокета       | Done
@@ -36,6 +38,19 @@ void Server::start()
         }
 
         start();
+    });
+}
+
+void Server::resetTimer()
+{
+    m_timer.cancel();
+    startTimer();
+}
+
+void Server::startTimer()
+{
+    m_timer.async_wait([this](const boost::system::error_code&) {
+        terminateServer();
     });
 }
 
